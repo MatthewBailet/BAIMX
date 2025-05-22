@@ -1,0 +1,67 @@
+.price-ticker {
+  width: 100%;
+  background: #1a1a2e;
+  color: white;
+  overflow: hidden;
+  padding: 12px 0;
+  border-top: 1px solid #2a2a4a;
+  border-bottom: 1px solid #2a2a4a;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.ticker-container {
+  width: 100%;
+  overflow: hidden;
+}
+
+.ticker-track {
+  display: flex;
+  animation: ticker 40s linear infinite;
+  white-space: nowrap;
+}
+
+.ticker-item {
+  margin: 0 25px;
+  display: flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.ticker-symbol {
+  font-weight: bold;
+  margin-right: 8px;
+  color: #61dafb;
+}
+
+.ticker-price {
+  margin-right: 8px;
+  font-family: 'Courier New', monospace;
+}
+
+.ticker-change {
+  font-weight: bold;
+}
+
+.ticker-change.positive {
+  color: #00ff9d;
+}
+
+.ticker-change.negative {
+  color: #ff5e5e;
+}
+
+@keyframes ticker {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+/* Make animation pause on hover */
+.ticker-container:hover .ticker-track {
+  animation-play-state: paused;
+} 
