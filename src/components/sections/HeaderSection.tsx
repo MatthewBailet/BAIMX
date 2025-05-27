@@ -276,11 +276,12 @@ export const StickyHeader: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [isSignUpModalOpen, setIsSignUpModalOpen] = useState(false);
+  const stickySearchInputRef = useRef<HTMLInputElement>(null); // Added ref for sticky search input
 
   useEffect(() => {
     const handleScroll = () => {
       // Get the bottom of the Today's Picks section
-      const picksSection = document.querySelector('.bg-slate-800.overflow-hidden');
+      const picksSection = document.querySelector('.bg-slate-800.overflow-hidden'); // This selector might need to be more robust
       if (picksSection) {
         const picksSectionBottom = picksSection.getBoundingClientRect().bottom;
         setIsVisible(picksSectionBottom < 0);
@@ -290,6 +291,26 @@ export const StickyHeader: React.FC = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // --- Effect for sticky search keyboard shortcut ---
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === '/' && isVisible) { // Only if sticky header is visible
+        const target = event.target as HTMLElement;
+        if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT') {
+          return;
+        }
+        stickySearchInputRef.current?.focus();
+        event.preventDefault();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isVisible]); // Re-run if isVisible changes
+  // --- End Search Effects ---
 
   return (
     <>
@@ -304,7 +325,9 @@ export const StickyHeader: React.FC = () => {
           >
             <div className="container mx-auto flex justify-between items-center max-w-[77rem] py-4">
               <div className="flex items-center space-x-2">
-                <img src="/logoBAIMXFinal.png" alt="BAIMX Logo" className="h-11 w-auto" />
+                <Link to="/">
+                  <img src="/logoBAIMXFinal.png" alt="BAIMX Logo" className="h-11 w-auto" />
+                </Link>
               </div>
               <div className="flex items-center space-x-4">
                 <motion.div layout className="flex items-center space-x-4">
@@ -332,22 +355,28 @@ export const StickyHeader: React.FC = () => {
                 <motion.div layout className="flex items-center space-x-2">
                   <div className="relative flex items-center w-[200px]">
                     <input
+                      ref={stickySearchInputRef} // Added ref
                       type="text"
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                       placeholder="Search BAIMX"
-                      className="w-full h-6 px-3 pr-8 text-xs text-gray-700 bg-gray-100 border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                      className="w-full h-6 px-3 pr-10 text-xs text-gray-700 bg-gray-100 border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none" // Increased pr-10
                     />
+                    {!searchTerm && (
+                      <div className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-gray-400 bg-gray-200 px-2 py-0.5 rounded-sm pointer-events-none">
+                        /
+                      </div>
+                    )}
                     {searchTerm && (
                       <motion.button
                         onClick={() => setSearchTerm('')}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 p-0.5"
+                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white p-0.5"
                         aria-label="Clear search"
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.8 }}
                       >
-                        <XIcon size={14} />
+                        <XIcon size={16} />
                       </motion.button>
                     )}
                   </div>
@@ -384,18 +413,33 @@ export const Header: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [isSignUpModalOpen, setIsSignUpModalOpen] = useState(false);
 
-  // --- Search State & Refs for Main Header (Simplified for always-open) ---
-  // const [isMainSearchOpen, setIsMainSearchOpen] = useState(false); // Removed
+  // --- Search State & Refs for Main Header ---
   const [mainSearchTerm, setMainSearchTerm] = useState('');
-  // const mainSearchInputRef = useRef<HTMLInputElement>(null); // Removed
-  // const mainSearchContainerRef = useRef<HTMLDivElement>(null); // Removed
+  const mainSearchInputRef = useRef<HTMLInputElement>(null); // Added ref for main search input
   // --- End Search State & Refs ---
 
   const timeIntervals = ['1m', '15m', '1h', '24h', '1w', '1mo', '1y', '5y', 'All'];
 
-  // --- Removed Search Effects for Main Header ---
+  // --- Effect for main search keyboard shortcut ---
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === '/') {
+        // Check if the event target is an input, textarea, or select element
+        const target = event.target as HTMLElement;
+        if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT') {
+          return; // Do not interfere with typing in other inputs
+        }
+        mainSearchInputRef.current?.focus();
+        event.preventDefault();
+      }
+    };
 
-  // const toggleMainSearch = () => { ... }; // Removed
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
+  // --- End Search Effects ---
 
   // Fetch data for all charts on mount
   useEffect(() => {
@@ -549,7 +593,9 @@ export const Header: React.FC = () => {
         <div className="bg-slate-900 p-4 py-5 text-white">
           <div className="container mx-auto flex justify-between items-center max-w-[77rem]">
             <div className="flex items-center space-x-2">
-              <img src="/logoBAIMXFinal.png" alt="BAIMX Logo" className="h-15 w-auto" />
+              <Link to="/">
+                <img src="/logoBAIMXFinal.png" alt="BAIMX Logo" className="h-16 w-auto" />
+              </Link>
             </div>
             <div className="flex items-center space-x-4">
               <motion.div layout className="flex items-center space-x-4">
@@ -578,13 +624,18 @@ export const Header: React.FC = () => {
                 {/* Static Search Input Field */}
                 <div className="relative flex items-center w-[220px]"> {/* Fixed width */}
                   <input
-                    // ref={mainSearchInputRef} // Removed
+                    ref={mainSearchInputRef} // Added ref
                     type="text"
                     value={mainSearchTerm}
                     onChange={(e) => setMainSearchTerm(e.target.value)}
                     placeholder="Search BAIMX"
-                    className="w-full h-8 px-3 pr-8 text-sm text-white bg-slate-800 border border-slate-700 rounded-md focus:ring-1 focus:ring-[#0091AD] focus:border-[#0091AD] outline-none placeholder-gray-400"
+                    className="w-full h-8 px-3 pr-10 text-sm text-white bg-slate-800 border border-slate-700 rounded-md focus:ring-1 focus:ring-[#0091AD] focus:border-[#0091AD] outline-none placeholder-gray-400" // Increased pr-10 for shortcut
                   />
+                  {!mainSearchTerm && ( // Show shortcut only when search is empty
+                    <div className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-500 bg-slate-700 px-2 py-0.5 rounded-sm pointer-events-none">
+                      /
+                    </div>
+                  )}
                   {mainSearchTerm && ( // Show X button only if there is text
                     <motion.button
                       onClick={() => setMainSearchTerm('')}

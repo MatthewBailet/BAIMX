@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'; // Import hooks and useEffect
 import { Link, Outlet, useLocation } from 'react-router-dom'; // Removed useLocation import -> Actually, ADDING useLocation
 import { motion, AnimatePresence } from 'framer-motion'; // Re-added motion and AnimatePresence import
-import { ChevronRight, ChevronUp, ChevronDown, ArrowUpRight, ArrowDownRight, Filter, CheckCheck, ChevronLeft, TrendingUp, TrendingDown, Lock as LockIcon, X as XIcon } from 'lucide-react'; // Added TrendingUp/Down and LockIcon
+import { ChevronRight, ChevronUp, ChevronDown, ArrowUpRight, ArrowDownRight, Filter, CheckCheck, ChevronLeft, TrendingUp, TrendingDown, Lock as LockIcon, X as XIcon, Menu as MenuIcon } from 'lucide-react'; // Added MenuIcon
 import { createPortal } from 'react-dom'; // Added createPortal import
 
 // Suppress AnimatePresence warnings
@@ -19,6 +19,7 @@ import './index.css' // Ensure Tailwind styles are imported
 const fontStyles = `
   @import url('https://fonts.googleapis.com/css2?family=Mina:wght@400;700&display=swap');
 
+  @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,opsz,wght@0,18..144,300..900;1,18..144,300..900&display=swap');
   body {
     font-family: Helvetica, Arial, sans-serif;
   }
@@ -34,6 +35,15 @@ const fontStyles = `
     font-weight: 700;
     font-style: normal;
   }
+
+  .merriweather-regular {
+    font-family: "Merriweather", serif;
+    font-weight: 400;
+    font-style: normal;
+  }
+  
+  
+
 `;
 
 // Add styles to document
@@ -53,6 +63,28 @@ if (typeof document !== 'undefined') {
   preconnectGstatic.href = 'https://fonts.gstatic.com';
   preconnectGstatic.crossOrigin = 'anonymous';
   document.head.appendChild(preconnectGstatic);
+}
+
+// Add Merriweather font import (similar to DM Serif)
+if (typeof document !== 'undefined') {
+  const merriweatherStyle = document.createElement('style');
+  merriweatherStyle.textContent = `@import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,opsz,wght@0,18..144,300..900;1,18..144,300..900&display=swap');`;
+  document.head.appendChild(merriweatherStyle);
+  
+  // Optionally, define specific CSS classes for Merriweather if needed, though Tailwind handles this with font-merriweather
+  // For example:
+  // const merriweatherClasses = document.createElement('style');
+  // merriweatherClasses.textContent = `
+  //   .font-merriweather-regular {
+  //     font-family: "Merriweather", serif;
+  //     font-weight: 400; // Or your desired default weight
+  //   }
+  //   .font-merriweather-bold {
+  //     font-family: "Merriweather", serif;
+  //     font-weight: 700;
+  //   }
+  // `;
+  // document.head.appendChild(merriweatherClasses);
 }
 
 // Add custom scrollbar styles
@@ -350,7 +382,7 @@ const TickerBar: React.FC = () => {
   const [tickerData, setTickerData] = useState<TickerCoinData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isHovered, setIsHovered] = useState(false); // This state might still be useful for the scroll animation pause
+  const [isHovered, setIsHovered] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [hoveredCoin, setHoveredCoin] = useState<string | null>(null);
   const [chartData, setChartData] = useState<ChartDataState>({});
@@ -358,6 +390,7 @@ const TickerBar: React.FC = () => {
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const constraintsRef = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null); // Added ref for search input
   // State for dynamic chart positioning
   const [chartPopupPosition, setChartPopupPosition] = useState<{ top: number; left: number } | null>(null);
 
@@ -413,6 +446,24 @@ const TickerBar: React.FC = () => {
     fetchTickerData();
     const intervalId = setInterval(fetchTickerData, 60000);
     return () => clearInterval(intervalId);
+  }, []);
+
+  // Add keyboard shortcut handler
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      // Only activate if not in another input/textarea
+      if (
+        event.key === '/' &&
+        document.activeElement?.tagName !== 'INPUT' &&
+        document.activeElement?.tagName !== 'TEXTAREA'
+      ) {
+        event.preventDefault();
+        searchInputRef.current?.focus();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
   // Update hover position handler
@@ -515,12 +566,18 @@ const TickerBar: React.FC = () => {
           <div className="container mx-auto max-w-[77rem] flex items-center justify-between">
             <div className="relative flex items-center w-[220px]">
               <input
+                ref={searchInputRef}
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search BAIMX"
-                className="w-full h-8 px-3 pr-8 text-sm text-white bg-slate-800 border border-slate-700 rounded-md focus:ring-1 focus:ring-[#0091AD] focus:border-[#0091AD] outline-none placeholder-gray-400"
+                className="ticker-search-input w-full h-8 px-3 pr-8 text-sm text-white bg-slate-800 border border-slate-700 rounded-md focus:ring-1 focus:ring-[#0091AD] focus:border-[#0091AD] outline-none placeholder-gray-400"
               />
+              {!searchTerm && (
+                <div className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-500 bg-slate-700 px-2 py-0.5 rounded-sm pointer-events-none">
+                  /
+                </div>
+              )}
               {searchTerm && (
                 <motion.button
                   onClick={() => setSearchTerm('')}
@@ -534,23 +591,7 @@ const TickerBar: React.FC = () => {
                 </motion.button>
               )}
             </div>
-            <div className="flex items-center space-x-2">
-              {filterOptions.map(filter => (
-                <motion.button
-                  key={filter.id}
-                  onClick={() => toggleFilter(filter.id)}
-                  className={`px-3 py-1.5 text-xs font-medium rounded-md border transition-colors cursor-pointer
-                    ${activeFilters.includes(filter.id)
-                      ? 'bg-[#0091AD] text-white border-[#0091AD]'
-                      : 'bg-slate-800 text-gray-300 border-slate-700 hover:bg-slate-700 hover:text-white'
-                    }`}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  {filter.label}
-                </motion.button>
-              ))}
-            </div>
+            
           </div>
         </div>
 
@@ -654,12 +695,37 @@ const TickerBar: React.FC = () => {
 // --- StickyHeader Component (Updated with scroll behavior and main header awareness) ---
 export const StickyHeader: React.FC = () => {
   const [hidden, setHidden] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); // State for hamburger menu
   const lastScrollY = useRef(window.scrollY);
   const location = useLocation(); // Get current location
 
   const HIDE_THRESHOLD = 100; // Pixels from top to start auto-hide/show behavior (if main header is not visible)
   const SCROLL_DELTA_FOR_ACTION = 10; // Minimum scroll distance to trigger hide/show
   const MAIN_HEADER_SELECTOR = '.bg-slate-900.overflow-hidden'; // Selector for the main Header's "Today's Picks" section, ensure this is specific enough
+
+  // Add keyboard shortcut handler
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (
+        event.key === '/' &&
+        !hidden &&
+        document.activeElement?.tagName !== 'INPUT' &&
+        document.activeElement?.tagName !== 'TEXTAREA'
+      ) {
+        const mainHeader = document.querySelector(MAIN_HEADER_SELECTOR);
+        const mainHeaderVisible = mainHeader ? mainHeader.getBoundingClientRect().bottom > 0 : false;
+        
+        if (!mainHeaderVisible || location.pathname !== '/') {
+          event.preventDefault();
+          const tickerSearchInput = document.querySelector('.ticker-search-input') as HTMLInputElement;
+          tickerSearchInput?.focus();
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [hidden, location.pathname]);
 
   useEffect(() => {
     const handleScrollOrPathChange = () => {
@@ -669,17 +735,11 @@ export const StickyHeader: React.FC = () => {
       const picksSection = document.querySelector(MAIN_HEADER_SELECTOR);
       const mainHeaderVisible = picksSection ? picksSection.getBoundingClientRect().bottom > 0 : false;
 
-      if (mainHeaderVisible) { // If main header is visible (e.g., top of home page)
+      if (mainHeaderVisible) { 
         setHidden(true);
       } else if (location.pathname === '/' && currentScrollY < HIDE_THRESHOLD) { 
-        // On home page, but scrolled near top (main header not fully in view yet, but close)
-        // This case might need adjustment based on exact behavior desired near top of home page
-        // For now, let's assume if mainHeader isn't visible, and we are on home near top, it should be hidden.
-        // Or, if the intention is for it to show once main header is *just* out of view on home, this needs tweaking.
-        // Consider if HIDE_THRESHOLD is the right point for it to appear on the home page specifically.
-        setHidden(false); // Default to show if main header is NOT visible and we are NOT on a page like /about
-      } else if (location.pathname !== '/') { // On other pages like /about
-        // Apply normal scroll logic for non-home pages
+        setHidden(false); 
+      } else if (location.pathname !== '/') { 
         if (currentScrollY < HIDE_THRESHOLD) {
           setHidden(false);
         } else {
@@ -689,10 +749,9 @@ export const StickyHeader: React.FC = () => {
             setHidden(false);
           }
         }
-      } else { // On home page, and mainHeader is NOT visible (scrolled past it)
-         // Apply normal scroll logic for home page when scrolled down
-        if (currentScrollY < HIDE_THRESHOLD) { // This HIDE_THRESHOLD might be too low if main header is large
-          setHidden(false); // Or true if it should only appear after a significant scroll on home
+      } else { 
+        if (currentScrollY < HIDE_THRESHOLD) { 
+          setHidden(false); 
         } else {
           if (direction === 'down' && currentScrollY > lastScrollY.current + SCROLL_DELTA_FOR_ACTION) {
             setHidden(true);
@@ -701,17 +760,19 @@ export const StickyHeader: React.FC = () => {
           }
         }
       }
-
       lastScrollY.current = currentScrollY;
     };
-
     handleScrollOrPathChange();
-
     window.addEventListener('scroll', handleScrollOrPathChange, { passive: true });
     return () => {
       window.removeEventListener('scroll', handleScrollOrPathChange);
     };
   }, [location.pathname, MAIN_HEADER_SELECTOR, HIDE_THRESHOLD, SCROLL_DELTA_FOR_ACTION]);
+
+  // Close mobile menu on path change
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [location.pathname]);
 
   return (
     <AnimatePresence>
@@ -721,15 +782,25 @@ export const StickyHeader: React.FC = () => {
           animate={{ y: "0%", opacity: 1 }}
           exit={{ y: "-100%", opacity: 0.8 }}
           transition={{ duration: 0.3, ease: "easeInOut" }}
-          // User's updated class names for the sticky header
           className="fixed top-0 left-0 right-0 bg-slate-900 border-b border-slate-900 z-[999] pt-3"
         >
-          {/* Preserving user's internal structure and styles for the header content */}
-          <div className="container mx-auto flex justify-between items-center max-w-[77rem] py-3 px-0">
-            <div className="flex items-center space-x-2">
-              <img src="/logoBAIMXFinal.png" alt="BAIMX Logo" className="h-15 w-auto" />
+          <div className="container mx-auto flex justify-between items-center max-w-[77rem] py-3 px-4 md:px-0"> {/* Added px-4 for mobile, md:px-0 for desktop */}
+            {/* Hamburger Menu - Visible on mobile (lg:hidden) */}
+            <div className="lg:hidden">
+              <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="text-white p-2">
+                {isMobileMenuOpen ? <XIcon size={24} /> : <MenuIcon size={24} />}
+              </button>
             </div>
-            <div className="flex items-center space-x-4">
+
+            {/* Logo - Centered on mobile, left on desktop */}
+            <div className="flex-grow flex justify-center lg:flex-grow-0 lg:justify-start">
+              <Link to="/">
+                <img src="/logoBAIMXFinal.png" alt="BAIMX Logo" className="h-15 w-auto" />
+              </Link>
+            </div>
+
+            {/* Desktop Navigation & Sign In - Hidden on mobile (hidden lg:flex) */}
+            <div className="hidden lg:flex items-center space-x-4">
               <nav className="flex space-x-4 text-sm">
                 <a href="#" className="hover:text-gray-300 relative pr-2.5 text-white">
                   Live Feed
@@ -747,16 +818,48 @@ export const StickyHeader: React.FC = () => {
                 <a href="#" className="hover:text-gray-300 text-white">Licensing</a>
                 <a href="#" className="hover:text-gray-300 text-white">Launchpad</a>
                 <a href="#" className="hover:text-gray-300 text-white">API</a>
-                <Link to="/about" className="hover:text-gray-300 text-white">About</Link> {/* Corrected to use Link */}
+                <Link to="/about" className="hover:text-gray-300 text-white">About</Link>
                 <a href="#" className="hover:text-gray-300 text-white">Contact</a>
               </nav>
               <div className="flex items-center space-x-2">
                 <button className="bg-[#0091AD] text-white px-4 py-2 rounded font-medium text-xs">Sign In</button>
               </div>
             </div>
+            
+            {/* Placeholder for right side on mobile to balance centered logo if hamburger is left */}
+            {/* Or remove if hamburger is intended to be the only item on the left before logo */}
+            <div className="lg:hidden w-10 h-10"></div> {/* This helps center the logo when hamburger is present. Adjust size or remove as needed. */} 
+
           </div>
           {/* Ticker Bar placed inside the motion.div of StickyHeader */}
           <TickerBar />
+
+          {/* Mobile Menu Overlay / Drawer */}
+          <AnimatePresence>
+            {isMobileMenuOpen && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+                className="lg:hidden bg-slate-800 absolute top-full left-0 right-0 shadow-lg overflow-hidden"
+              >
+                <nav className="flex flex-col p-4 space-y-3">
+                  <a href="#" className="hover:text-gray-300 text-white text-center py-2">Live Feed</a>
+                  <a href="#" className="hover:text-gray-300 text-white text-center py-2">Subscribe</a>
+                  <a href="#" className="hover:text-gray-300 text-white text-center py-2">Prices</a>
+                  <a href="#" className="hover:text-gray-300 text-white text-center py-2">Learn</a>
+                  <a href="#" className="hover:text-gray-300 text-white text-center py-2">Research</a>
+                  <a href="#" className="hover:text-gray-300 text-white text-center py-2">Licensing</a>
+                  <a href="#" className="hover:text-gray-300 text-white text-center py-2">Launchpad</a>
+                  <a href="#" className="hover:text-gray-300 text-white text-center py-2">API</a>
+                  <Link to="/about" className="hover:text-gray-300 text-white text-center py-2">About</Link>
+                  <a href="#" className="hover:text-gray-300 text-white text-center py-2">Contact</a>
+                  <button className="bg-[#0091AD] text-white px-4 py-3 rounded font-medium text-sm w-full mt-2">Sign In</button>
+                </nav>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </motion.div>
       )}
     </AnimatePresence>
@@ -867,7 +970,9 @@ const Header: React.FC = () => {
         <div className="bg-slate-900 p-4 py-5 text-white">
           <div className="container mx-auto flex justify-between items-center max-w-[77rem]">
             <div className="flex items-center space-x-2">
-              <img src="/logoBAIMXFinal.png" alt="BAIMX Logo" className="h-11 w-auto" /> {/* Actual Logo */}
+              <Link to="/">
+                <img src="/logoBAIMXFinal.png" alt="BAIMX Logo" className="h-11 w-auto" /> {/* Actual Logo */}
+              </Link>
             </div>
             <div className="flex items-center space-x-4">
               <nav className="flex space-x-4 text-sm">
@@ -1193,7 +1298,7 @@ export const FeaturedSection: React.FC = () => {
       id: 'nl1',
       title: 'BAIMX Daily Brief',
       description: 'Your essential morning update on market-moving news.',
-      imageSrc: '/newsletter-daily.png', // Replace with actual or leave for placeholder
+      imageSrc: '/Newsletter1.png', // Replace with actual or leave for placeholder
       frequency: 'Daily',
       previewLink: '#',
     },
@@ -1209,7 +1314,7 @@ export const FeaturedSection: React.FC = () => {
       id: 'nl3',
       title: 'Hourly Algo Signals',
       description: 'Real-time insights powered by BAIMX algorithms.',
-      imageSrc: null, // This will use the placeholder
+      imageSrc: '/Newsletter2.png', // This will use the placeholder
       frequency: 'Hourly',
       previewLink: '#',
     },
@@ -1217,7 +1322,7 @@ export const FeaturedSection: React.FC = () => {
       id: 'nl4',
       title: 'Markets Today',
       description: 'Key movements and analysis in Canadian finance.',
-      imageSrc: '/toronto-stock.png', // Example image, replace as needed
+      imageSrc: '/Newsletter3.png', // Example image, replace as needed
       frequency: 'Daily',
       previewLink: '#',
     },
@@ -1339,7 +1444,7 @@ export const FeaturedSection: React.FC = () => {
       
       {/* Additional Feature Articles row */}
       <div className="bg-white border-gray-400">
-        <div className="grid grid-cols-1 md:grid-cols-8 divide-y border-b border-gray-400 md:divide-y-0 md:divide-x divide-gray-400">
+        <div className="grid grid-cols-1 md:grid-cols-7 divide-y border-b border-gray-400 md:divide-y-0 md:divide-x divide-gray-400">
           {/* First (larger) article */}
           <motion.div
             key={`feature-${additionalFeatureArticles[0].id}`}
@@ -1350,19 +1455,19 @@ export const FeaturedSection: React.FC = () => {
               delay: 0.1,
               ease: "easeOut" 
             }}
-            className="md:col-span-4 flex-grow flex-shrink-0"
+            className="md:col-span-3 flex-grow flex-shrink-0"
           >
             <Link
               to={`/article/${additionalFeatureArticles[0].id}`}
               className="block h-full transition-colors duration-200 group" // Removed hover:bg-gray-50
             >
-              <div className="flex flex-col h-full p-6 py-8 ">
+              <div className="flex flex-col h-full p-8 py-8 ">
                 {/* Image Container - Larger for the combined article */}
                 <div className="relative overflow-hidden">
                   <img 
                     src={additionalFeatureArticles[0].imageUrl || '/placeholder.jpg'} 
                     alt="" 
-                    className="w-full h-84 object-cover transition-transform duration-500"
+                    className="w-full h-76 object-cover transition-transform duration-500"
                   />
                   {/* Removed overlay */}
                 </div>
@@ -1401,7 +1506,7 @@ export const FeaturedSection: React.FC = () => {
                   </div>
                 )}
                 
-                <div className="flex flex-wrap gap-2 mt-auto pt-3">
+                <div className="flex flex-wrap gap-2 pt-3">
                   {additionalFeatureArticles[0].tags.map(tag => (
                     <span key={tag} className="bg-slate-100 border border-slate-200 text-gray-700 px-3 py-1 text-xs font-medium rounded-full"> {/* Lighter border, slightly adjusted text color */}
                       {tag}
@@ -1443,7 +1548,7 @@ export const FeaturedSection: React.FC = () => {
                 to={`/article/${article.id}`}
                 className="block h-full transition-colors duration-200 group" // Removed hover:bg-gray-50
               >
-                <div className="flex flex-col h-full p-6 py-8 ">
+                <div className="flex flex-col h-full p-8 py-8 ">
                   {/* Image Container */}
                   <div className="relative overflow-hidden">
                     <img 
@@ -1523,8 +1628,8 @@ export const FeaturedSection: React.FC = () => {
                   )}
 
                   {index === 1 && ( // For the SECOND of the two articles (existing related links)
-                    <div className="mt-auto pt-4"> 
-                      <div className="pt-3 border-t border-gray-300">  {/* Lighter border */}
+                    <div className="mt-auto py-4"> 
+                      <div className="py-2 border-y border-gray-300">  {/* Lighter border */}
                         <div>
                           
                           <a href="#" className="block font-medium leading-[1.1] py-1 text-md text-gray-900 hover:text-gray-500"> {/* Reverted hover to gray-500 */}
@@ -1532,11 +1637,11 @@ export const FeaturedSection: React.FC = () => {
                           </a>
                           
                           <a href="#" className="block py-1 text-md leading-[1.1] font-medium text-gray-900 hover:text-gray-500 border-t border-gray-200 mt-1.5 pt-1.5"> {/* Reverted hover to gray-500 */}
-                            What's Next on Russia Sanctions If Putin Balks at Ceasefire Call
+                            Ethereum's creator says the network is 'too slow'
                           </a>
 
                           <a href="#" className="block py-1 text-md leading-[1.1] font-medium text-gray-900 hover:text-gray-500 border-t border-gray-200 mt-1.5 pt-1.5"> {/* Reverted hover to gray-500 */}
-                            What's Next on Russia Sanctions If Putin Balks at Ceasefire Call
+                            Solana is the beginning of a new era of blockchain. What's next?
                           </a>
                         </div>
                       </div>
@@ -1560,7 +1665,7 @@ export const FeaturedSection: React.FC = () => {
           {/* NEW: Featured Story Row - Using Static Data (not affected by article cycling) */}
           <div className="grid grid-cols-1  md:grid-cols-5 gap-0 mb-6 border-b border-gray-300 "> {/* Lighter bottom border */}
             {/* First Featured Story - Static */}
-            <div className="md:col-span-2 border-r border-gray-300 p-6 pt-8"> {/* Lighter right border */}
+            <div className="md:col-span-2 border-r border-gray-300 p-8 pt-8"> {/* Lighter right border */}
               <Link to="/article/static-1" className="group">
                 {/* Image Container */}
                 <div className="relative  overflow-hidden">
@@ -1609,7 +1714,7 @@ export const FeaturedSection: React.FC = () => {
             </div>
 
             {/* Second Featured Story - Static */}
-            <div className="md:col-span-3 p-8 px-6 ">
+            <div className="md:col-span-3 p-8 px-8 ">
               <Link to="/article/static-2" className="group">
                 {/* Image Container */}
                 <div className="relative overflow-hidden">
@@ -1631,9 +1736,13 @@ export const FeaturedSection: React.FC = () => {
                 <div className="flex items-center text-xs text-gray-600 mb-2"> {/* Slightly darker meta text */}
                   <span>3h ago • 7 min read</span>
                 </div>
+
+                <p className="text-sm line-clamp-3 text-gray-600 leading-[1.2] font-regular">
+                      Bitcoin's price is falling, but the bulls are still bullish. Some analysts are calling for a 100% rally. MicroStrategy is buying more bitcoin.
+                    </p>
                 
                 {/* Tags */}
-                <div className="flex flex-wrap gap-1 mt-1">
+                <div className="flex flex-wrap gap-1 mt-4">
                   <span className="bg-slate-100 border border-slate-200 text-gray-700 px-3 py-1 text-xs font-medium rounded-full"> {/* Lighter border, slightly adjusted text color */}
                     Politics
                   </span>
@@ -1647,7 +1756,7 @@ export const FeaturedSection: React.FC = () => {
 
 
               {/* LONG STORY - Static - Modified for consistency */}
-          <Link to="/article/static-border-strife" className="group flex flex-row w-full border-b border-gray-300 pb-6 px-6 pt-2  transition-colors duration-150"> {/* Lighter bottom border */}
+          <Link to="/article/static-border-strife" className="group flex flex-row w-full border-b border-gray-300 pb-6 px-8 pt-2  transition-colors duration-150"> {/* Lighter bottom border */}
             {/* Image Container and Caption */}
             <div className="flex-shrink-0 w-92 mr-6">
               <img src="/channel.png" alt="Border strife in India" className="w-full h-52 object-cover" />
@@ -1679,7 +1788,7 @@ export const FeaturedSection: React.FC = () => {
           </Link>
           
           {/* Regular Stories Grid - Static - Changed to 3x2 */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 px-6 py-6"> {/* Changed to sm:grid-cols-3 and adjusted gap */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 px-8 py-8"> {/* Changed to sm:grid-cols-3 and adjusted gap */}
             {/* Using slice(2, 8) for static content from initialArticles */}
             {initialArticles.slice(2, 8).map((article) => ( // Changed source to initialArticles
               <Link key={`top-${article.id}`} to={`/article/${article.id}`} className="group flex flex-col transition-colors duration-150 py-1"> {/* Changed to flex-col */}
@@ -2053,7 +2162,9 @@ const Footer: React.FC = () => (
     <div className="container mx-auto max-w-[77rem] py-8 px-4">
       {/* Logo Section */}
       <div className="mb-6">
-        <img src="/logoBAIMXFinal.png" alt="BAIMX Logo" className="h-12 w-auto" />
+        <Link to="/">
+          <img src="/logoBAIMXFinal.png" alt="BAIMX Logo" className="h-12 w-auto" />
+        </Link>
       </div>
       
       {/* Navigation Grid */}

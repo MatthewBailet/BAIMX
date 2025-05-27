@@ -26,8 +26,8 @@ const AboutPage: React.FC = () => {
 
           {/* Content (ensure this is on top) */}
           <div className="relative z-20 container mx-auto max-w-[77rem] px-4 text-center mt-12">
-            <img src="/logoBAIMXFinal.png" alt="BAIMX Logo" className="h-10 md:h-15 w-auto mx-auto mb-4" /> {/* Changed to white logo for dark bg */}
-            <h1 className="text-4xl md:text-5xl font-bold text-white max-w-3xl mx-auto mb-6 dm-serif-text-regular leading-tight">
+            <img src="/logoBAIMXFinal.png" alt="BAIMX Logo" className="h-10 md:h-13 w-auto mx-auto mb-2" /> {/* Changed to white logo for dark bg */}
+            <h1 className="text-4xl md:text-6xl font-bold text-white max-w-5xl mx-auto mb-6 dm-serif-text-regular leading-tight">
               Navigating the Complexities of Global Decentralized Finance.
             </h1>
             <p className="text-md md:text-lg text-slate-200 max-w-3xl mx-auto font-light">
