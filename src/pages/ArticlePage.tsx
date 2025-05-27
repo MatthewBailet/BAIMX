@@ -1,7 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useParams } from 'react-router-dom'; // Added useParams
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronRight, ChevronUp, ChevronDown, ArrowUpRight, ArrowDownRight, Filter, CheckCheck, ChevronLeft, TrendingUp, TrendingDown, Lock as LockIcon, X as XIcon } from 'lucide-react';
+import {
+  ChevronRight, ChevronUp, ChevronDown, ArrowUpRight, ArrowDownRight, Filter, CheckCheck, ChevronLeft, TrendingUp, TrendingDown, Lock as LockIcon, X as XIcon, MonitorSmartphone,
+  Facebook, // Added Facebook icon
+  Twitter,  // Added Twitter icon (X)
+  Linkedin, // Added LinkedIn icon
+  Mail,     // Added Mail icon
+  Link2 as LinkIcon, // Added Link icon (renamed to avoid conflict with react-router-dom Link)
+} from 'lucide-react';
 import { createPortal } from 'react-dom';
 
 // Assuming TickerBar and StickyHeader are exported from App.tsx or a components file
@@ -74,7 +81,27 @@ const TickerBar: React.FC = () => {
 };
 // --- END Replicated TickerBar ---
 
+// --- NEW: BAIMX Pro AdBox Component ---
+const BaimxProAdBox: React.FC = () => {
+  // Using MonitorSmartphone as a placeholder for the dual monitor icon
+  const IconComponent = MonitorSmartphone; // Or another icon like Laptop2
 
+  return (
+    <div className="bg-black text-white p-4 mb-6 cursor-default">
+      <h3 className="text-md font-semibold mb-2 leading-tight cursor-default">
+        Before it's here, <br />it's on <span className="text-blue-400">BAIMX Pro</span>.
+      </h3>
+      <a 
+        href="#" // Placeholder link for BAIMX Pro page
+        className="flex items-center text-sm cursor-default font-semibold hover:text-gray-300 transition-colors duration-150 mt-3"
+      >
+        <IconComponent size={20} className="mr-2 cursor-default" />
+        LEARN MORE
+      </a>
+    </div>
+  );
+};
+// --- END NEW: BAIMX Pro AdBox Component ---
 
 // --- END Replicated StickyHeader ---
 
@@ -83,7 +110,7 @@ const ArticleContextContent: React.FC = () => {
   const initialContextHeight = "4rem"; // Approx 3-4 lines
 
   return (
-    <div className='relative w-full border border-gray-400 mt-0.5 px-3 py-4 rounded-md md:mt-[204px] mt-[204px]'>
+    <div className='relative w-full border border-gray-400 mt-0.5 px-3 py-4 rounded-md mt-[204px] md:mt-[0px]'>
       <h2 className="text-xs text-gray-900 font-sans font-semibold pb-2 border-b border-gray-200">Article Context</h2>
       <div className="md:hidden relative"> {/* Mobile: Framer Motion */}
         <AnimatePresence initial={false}>
@@ -146,7 +173,7 @@ const MainArticleContent: React.FC<MainArticleContentProps> = ({ slug }) => (
     <h1 className="text-4xl sm:text-4xl md:text-5xl font-bold text-neutral-800 px-4 pb-4 md:pb-6 mx-4 sm:mx-8 md:mx-16 mt-4 md:mt-0 leading-[1] md:leading-[.9] max-w-2xl mx-auto">
       Article: {slug} Sam Bankman-Fried's FTX is a fraud and a ponzi scheme
     </h1>
-    <div className="max-w-2xl mx-auto px-4 mb-0 mx-4 sm:mx-8 md:mx-16 text-sm sm:text-base md:text-lg">
+    <div className="max-w-2xl mx-auto px-4 mb-0 mx-4 sm:mx-8 md:mx-16 text-sm sm:text-base md:text-md">
       <p className="text-black flex items-center">
         <CheckCheck size={20} className="mr-1 text-black" />
         Confirmed by&nbsp;
@@ -161,11 +188,22 @@ const MainArticleContent: React.FC<MainArticleContentProps> = ({ slug }) => (
     <p className="text-gray-500 px-4 text-sm sm:text-md md:text-md leading-normal md:leading-5 text-justify pb-4 md:pb-8 max-w-2xl mx-4 sm:mx-8 md:mx-16 mx-auto font-sans font-normal">
       Will FTX be the next bitcoin? probably not and heres what we know about it and what you need to know about it
     </p>
-    <img
-      src="/Oil.png"
-      alt={`Image for article: ${slug}`}
-      className="max-w-2xl px-4 md:px-8 md:mx-12 mb-8 md:mb-16 block w-full object-cover h-56 sm:h-72 md:h-96"
-    />
+    {/* --- ShareBar --- */}
+    <div className="max-w-2xl px-4 md:px-8 md:mx-12 mb-6 md:mb-8">
+      <ShareBar articleUrl={window.location.href} articleTitle={`Article: ${slug} Sam Bankman-Fried's FTX is a fraud and a ponzi scheme`} />
+    </div>
+    {/* --- END: ShareBar --- */}
+    {/* Image Container - Reverted to original structure, Media tag below */}
+    <div className="max-w-2xl  mb-2 md:mb-3"> {/* Reduced bottom margin to accommodate caption */}
+      <img
+        src="/Oil.png"
+        alt={`Image for article: ${slug}`}
+        className="max-w-2xl px-4 md:px-8 md:mx-12 mb-0 block w-full object-cover h-56 sm:h-72 md:h-96" // Reverted image classes, removed direct mb
+      />
+       <p className="text-[13px] m w-full mt-1 md:ml-4 pr-4 md:pr-0  text-gray-500 mt-0 mb-8 md:mb-16 text-right  max-w-2xl ">BAIMX Media</p> {/* BAIMX Media tag styled like App.tsx, below image and aligned right */}
+   
+    </div>
+    
     <div className="text-neutral-800 px-8 md:px-4  text-lg md:text-lg leading-relaxed md:leading-9 text-justify pb-8 md:pb-12 md:max-w-lg mx-8  md:mx-16 mx-auto font-merriweather merriweather-regular">
       <p className="first-letter:text-7xl first-letter:font-bold first-letter:text-neutral-900 \
                     first-letter:mr-3 first-letter:float-left first-letter:leading-[0.8em] first-letter:mt-1">
@@ -189,6 +227,64 @@ const MainArticleContent: React.FC<MainArticleContentProps> = ({ slug }) => (
     </div>
   </>
 );
+
+// --- NEW: ShareBar Component ---
+interface ShareBarProps {
+  articleUrl: string;
+  articleTitle: string;
+}
+
+const ShareBar: React.FC<ShareBarProps> = ({ articleUrl, articleTitle }) => {
+  const encodedUrl = encodeURIComponent(articleUrl);
+  const encodedTitle = encodeURIComponent(articleTitle);
+
+  const socialLinks = [
+    {
+      name: 'Facebook',
+      icon: Facebook,
+      url: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`,
+    },
+    {
+      name: 'X (Twitter)',
+      icon: Twitter,
+      url: `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}`,
+    },
+    {
+      name: 'LinkedIn',
+      icon: Linkedin,
+      url: `https://www.linkedin.com/shareArticle?mini=true&url=${encodedUrl}&title=${encodedTitle}`,
+    },
+    {
+      name: 'Email',
+      icon: Mail,
+      url: `mailto:?subject=${encodedTitle}&body=Check%20out%20this%20article:%20${encodedUrl}`,
+    },
+    {
+      name: 'Copy Link',
+      icon: LinkIcon,
+      action: () => navigator.clipboard.writeText(articleUrl).then(() => alert('Link copied to clipboard!')),
+    },
+  ];
+
+  return (
+    <div className="flex items-center space-x-2">
+      {socialLinks.map((item) => (
+        <a
+          key={item.name}
+          href={item.url || '#'}
+          onClick={item.action ? (e) => { e.preventDefault(); item.action && item.action(); } : undefined}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={`Share on ${item.name}`}
+          className="p-2 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-100 hover:text-black transition-colors duration-150 cursor-pointer"
+        >
+          <item.icon size={20} />
+        </a>
+      ))}
+    </div>
+  );
+};
+// --- END: ShareBar Component ---
 
 interface RelatedArticle {
   id: string;
@@ -248,7 +344,7 @@ const RelatedArticleItem: React.FC<{ article: RelatedArticle }> = ({ article }) 
 
 const RelatedArticlesSectionContent: React.FC = () => (
   <div className='w-full mt-8'>
-    <h2 className="text-md text-gray-900 font-sans font-semibold pb-2 mb-3 border-b border-gray-300">
+    <h2 className="text-lg text-gray-900 font-sans font-semibold pb-2 mb-3 border-b border-gray-300">
       Related Articles
     </h2>
     <div>
@@ -258,6 +354,144 @@ const RelatedArticlesSectionContent: React.FC = () => (
     </div>
   </div>
 );
+
+// --- NEW: NewslettersSectionContent Component ---
+type NewsletterFrequency = 'Hourly' | 'Daily' | 'Weekly';
+
+interface NewsletterItemData {
+  id: string;
+  title: string;
+  description: string;
+  imageSrc?: string; // Optional
+  frequency: NewsletterFrequency;
+  previewLink: string;
+}
+
+const newslettersData: NewsletterItemData[] = [
+  {
+    id: 'nl1',
+    title: 'BAIMX Daily Brief',
+    description: 'Your essential morning update on market-moving news.',
+    imageSrc: '/Newsletter1.png',
+    frequency: 'Daily',
+    previewLink: '#',
+  },
+  {
+    id: 'nl2',
+    title: 'BAIMX Weekly Digest',
+    description: 'In-depth analysis and trends from the past week.',
+    imageSrc: '/newsletter-weekly.png',
+    frequency: 'Weekly',
+    previewLink: '#',
+  },
+  {
+    id: 'nl3',
+    title: 'Hourly Algo Signals',
+    description: 'Real-time insights powered by BAIMX algorithms.',
+    imageSrc: '/Newsletter2.png',
+    frequency: 'Hourly',
+    previewLink: '#',
+  },
+  {
+    id: 'nl4',
+    title: 'Markets Today',
+    description: 'Key movements and analysis in Canadian finance.',
+    imageSrc: '/Newsletter3.png',
+    frequency: 'Daily',
+    previewLink: '#',
+  },
+   {
+    id: 'nl5',
+    title: 'Tech Pulse Weekly',
+    description: 'The latest in tech, AI, and innovation, weekly.',
+    // imageSrc: null, // Will use placeholder
+    frequency: 'Weekly',
+    previewLink: '#',
+  },
+];
+
+const NewslettersSectionContent: React.FC = () => {
+  const [activeNewsletterFrequency, setActiveNewsletterFrequency] = useState<NewsletterFrequency>('Daily');
+
+  const filteredNewsletters = newslettersData.filter(nl => nl.frequency === activeNewsletterFrequency).slice(0, 3);
+
+  return (
+    <div className='w-full mt-8'>
+      <h2 className="text-lg text-gray-900 font-sans font-semibold pb-2 mb-3 border-b border-gray-300">
+        Newsletters
+      </h2>
+      {/* Frequency Selectors */}
+      <div className="flex space-x-3 mb-4">
+        {(['Hourly', 'Daily', 'Weekly'] as NewsletterFrequency[]).map(freq => (
+          <button
+            key={freq}
+            onClick={() => setActiveNewsletterFrequency(freq)}
+            className={`text-xs font-medium pb-1 transition-colors duration-150 
+                        ${activeNewsletterFrequency === freq
+                          ? 'text-blue-600 border-b-2 border-blue-600'
+                          : 'text-gray-500 hover:text-gray-800'}`}
+          >
+            {freq}
+          </button>
+        ))}
+      </div>
+
+      {/* Newsletter Items with Animation */}
+      <AnimatePresence mode="wait" initial={false}>
+        <motion.div
+          key={activeNewsletterFrequency}
+          initial={{ opacity: 0, x: 20, scale: 0.98 }}
+          animate={{ opacity: 1, x: 0, scale: 1 }}
+          exit={{ opacity: 0, x: -20, scale: 0.98 }}
+          transition={{
+            type: "spring",
+            duration: 0.4,
+            bounce: 0.1,
+            opacity: { duration: 0.2 },
+            scale: { duration: 0.2 }
+          }}
+          className="space-y-3" // Reduced space-y from 4 to 3 for tighter fit in sidebar
+        >
+          {filteredNewsletters.length > 0 ? filteredNewsletters.map(nl => (
+            <div key={nl.id} className="flex items-start space-x-3">
+              <div className="flex-shrink-0 w-16 h-16 bg-gray-100 border border-gray-200 overflow-hidden"> {/* Adjusted image size for sidebar */}
+                {nl.imageSrc ? (
+                  <img src={nl.imageSrc} alt={nl.title} className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full bg-gradient-to-br from-slate-200 to-slate-300 flex items-center justify-center text-slate-500 text-[10px] p-1 text-center">No Image</div>
+                )}
+              </div>
+              <div className="flex-grow">
+                <h4 className="text-sm font-semibold text-gray-900 mb-0.5 leading-tight line-clamp-2">{nl.title}</h4> {/* Added line-clamp-2 for title */}
+                <p className="text-xs text-gray-600 mb-1 leading-snug line-clamp-2">{nl.description}</p>
+                <a
+                  href={nl.previewLink}
+                  className="text-xs text-blue-600 hover:text-blue-700 underline font-medium"
+                >
+                  Preview
+                </a>
+              </div>
+            </div>
+          )) : (
+            <p className="text-xs text-gray-500">No newsletters for this frequency.</p>
+          )}
+        </motion.div>
+      </AnimatePresence>
+
+      {/* Subscribe Section - Simplified for sidebar */}
+      <div className="mt-6 pt-4 border-t border-gray-300">
+        <button className="w-full flex items-center justify-center bg-black hover:bg-slate-800 text-white text-sm font-medium py-2 px-3 rounded-md transition-colors duration-150 mb-2">
+          <LockIcon size={14} className="mr-2" />
+          Subscribe
+        </button>
+        <p className="text-[10px] text-gray-500 leading-relaxed text-center"> {/* Centered and smaller text */}
+          Get the latest insights from BAIMX.
+        </p>
+      </div>
+    </div>
+  );
+};
+// --- END NEW: NewslettersSectionContent Component ---
 
 const ArticlePage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -281,9 +515,13 @@ const ArticlePage: React.FC = () => {
           <div className="flex flex-col md:flex-row">
             {/* Desktop: Left Column */}
             <div className="hidden md:block w-full md:w-2/9 md:border-r border-b md:border-b-0 border-gray-400 px-4 pt-6 pb-6 md:pt-12 md:pb-12">
+              <div className="md:mt-[204px]">
+                 <BaimxProAdBox />
+              </div>
               <ArticleContextContent />
               <ReferencedSectionContent />
               <RelatedArticlesSectionContent /> {/* Added Related Articles for Desktop */}
+              <NewslettersSectionContent /> {/* ADDED NEWSLETTERS FOR DESKTOP */}
             </div>
 
             {/* Right Column / Main Article Content (for desktop and mobile) */}
@@ -294,8 +532,10 @@ const ArticlePage: React.FC = () => {
 
           {/* --- Mobile Only: Referenced and Related Articles at the bottom --- */}
           <div className="md:hidden w-full px-4 pt-6 pb-6">
+            <BaimxProAdBox /> {/* MOVED BAIMX PRO AD BOX FOR MOBILE */}
             <ReferencedSectionContent />
             <RelatedArticlesSectionContent /> {/* Added Related Articles for Mobile Bottom */}
+            <NewslettersSectionContent /> {/* ADDED NEWSLETTERS FOR MOBILE BOTTOM */}
           </div>
 
         </div>

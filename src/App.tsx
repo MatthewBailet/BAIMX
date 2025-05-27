@@ -623,7 +623,7 @@ const TickerBar: React.FC = () => {
                 return (
                   <motion.div
                     key={`${coin.id}-${index}`}
-                    className="inline-flex items-center mx-1 px-2 flex-shrink-0 bg-gray-900 rounded-md border border-gray-700 py-1 px-2 cursor-pointer" // Added cursor-pointer
+                    className="inline-flex items-center mx-1 px-2 flex-shrink-0 bg-gray-900 rounded-md border border-gray-700 py-1 px-2 cursor-default" // Added cursor-default
                     onMouseEnter={(e) => handleTickerHover(coin.symbol.toUpperCase(), e)}
                     onMouseLeave={handleTickerLeave}
                     style={{
@@ -787,14 +787,14 @@ export const StickyHeader: React.FC = () => {
           <div className="container mx-auto flex justify-between items-center max-w-[77rem] py-3 px-4 md:px-0"> {/* Added px-4 for mobile, md:px-0 for desktop */}
             {/* Hamburger Menu - Visible on mobile (lg:hidden) */}
             <div className="lg:hidden">
-              <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="text-white p-2">
+              <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="text-white p-2 cursor-default">
                 {isMobileMenuOpen ? <XIcon size={24} /> : <MenuIcon size={24} />}
               </button>
             </div>
 
             {/* Logo - Centered on mobile, left on desktop */}
             <div className="flex-grow flex justify-center lg:flex-grow-0 lg:justify-start">
-              <Link to="/">
+              <Link to="/" className="cursor-default">
                 <img src="/logoBAIMXFinal.png" alt="BAIMX Logo" className="h-15 w-auto" />
               </Link>
             </div>
@@ -802,7 +802,7 @@ export const StickyHeader: React.FC = () => {
             {/* Desktop Navigation & Sign In - Hidden on mobile (hidden lg:flex) */}
             <div className="hidden lg:flex items-center space-x-4">
               <nav className="flex space-x-4 text-sm">
-                <a href="#" className="hover:text-gray-300 relative pr-2.5 text-white">
+                <a href="#" className="hover:text-gray-300 relative pr-2.5 text-white cursor-default">
                   Live Feed
                   <motion.span
                     className="absolute top-0.5 right-0 block h-1.5 w-1.5 rounded-full bg-blue-500 "
@@ -811,18 +811,18 @@ export const StickyHeader: React.FC = () => {
                     aria-hidden="true"
                   />
                 </a>
-                <a href="#" className="hover:text-gray-300 text-white">Subscribe</a>
-                <a href="#" className="hover:text-gray-300 text-white">Prices</a>
-                <a href="#" className="hover:text-gray-300 text-white">Learn</a>
-                <a href="#" className="hover:text-gray-300 text-white">Research</a>
-                <a href="#" className="hover:text-gray-300 text-white">Licensing</a>
-                <a href="#" className="hover:text-gray-300 text-white">Launchpad</a>
-                <a href="#" className="hover:text-gray-300 text-white">API</a>
-                <Link to="/about" className="hover:text-gray-300 text-white">About</Link>
-                <a href="#" className="hover:text-gray-300 text-white">Contact</a>
+                <a href="#" className="hover:text-gray-300 text-white cursor-default">Subscribe</a>
+                <a href="#" className="hover:text-gray-300 text-white cursor-default">Prices</a>
+                <a href="#" className="hover:text-gray-300 text-white cursor-default">Learn</a>
+                <a href="#" className="hover:text-gray-300 text-white cursor-default">Research</a>
+                <a href="#" className="hover:text-gray-300 text-white cursor-default">Licensing</a>
+                <a href="#" className="hover:text-gray-300 text-white cursor-default">Launchpad</a>
+                <a href="#" className="hover:text-gray-300 text-white cursor-default">API</a>
+                <Link to="/about" className="hover:text-gray-300 text-white cursor-default">About</Link>
+                <a href="#" className="hover:text-gray-300 text-white cursor-default">Contact</a>
               </nav>
               <div className="flex items-center space-x-2">
-                <button className="bg-[#0091AD] text-white px-4 py-2 rounded font-medium text-xs">Sign In</button>
+                <button className="bg-[#0091AD] text-white px-4 py-2 rounded font-medium text-xs cursor-default">Sign In</button>
               </div>
             </div>
             
@@ -845,17 +845,17 @@ export const StickyHeader: React.FC = () => {
                 className="lg:hidden bg-slate-800 absolute top-full left-0 right-0 shadow-lg overflow-hidden"
               >
                 <nav className="flex flex-col p-4 space-y-3">
-                  <a href="#" className="hover:text-gray-300 text-white text-center py-2">Live Feed</a>
-                  <a href="#" className="hover:text-gray-300 text-white text-center py-2">Subscribe</a>
-                  <a href="#" className="hover:text-gray-300 text-white text-center py-2">Prices</a>
-                  <a href="#" className="hover:text-gray-300 text-white text-center py-2">Learn</a>
-                  <a href="#" className="hover:text-gray-300 text-white text-center py-2">Research</a>
-                  <a href="#" className="hover:text-gray-300 text-white text-center py-2">Licensing</a>
-                  <a href="#" className="hover:text-gray-300 text-white text-center py-2">Launchpad</a>
-                  <a href="#" className="hover:text-gray-300 text-white text-center py-2">API</a>
-                  <Link to="/about" className="hover:text-gray-300 text-white text-center py-2">About</Link>
-                  <a href="#" className="hover:text-gray-300 text-white text-center py-2">Contact</a>
-                  <button className="bg-[#0091AD] text-white px-4 py-3 rounded font-medium text-sm w-full mt-2">Sign In</button>
+                  <a href="#" className="hover:text-gray-300 text-white text-center py-2 cursor-default">Live Feed</a>
+                  <a href="#" className="hover:text-gray-300 text-white text-center py-2 cursor-default">Subscribe</a>
+                  <a href="#" className="hover:text-gray-300 text-white text-center py-2 cursor-default">Prices</a>
+                  <a href="#" className="hover:text-gray-300 text-white text-center py-2 cursor-default">Learn</a>
+                  <a href="#" className="hover:text-gray-300 text-white text-center py-2 cursor-default">Research</a>
+                  <a href="#" className="hover:text-gray-300 text-white text-center py-2 cursor-default">Licensing</a>
+                  <a href="#" className="hover:text-gray-300 text-white text-center py-2 cursor-default">Launchpad</a>
+                  <a href="#" className="hover:text-gray-300 text-white text-center py-2 cursor-default">API</a>
+                  <Link to="/about" className="hover:text-gray-300 text-white text-center py-2 cursor-default">About</Link>
+                  <a href="#" className="hover:text-gray-300 text-white text-center py-2 cursor-default">Contact</a>
+                  <button className="bg-[#0091AD] text-white px-4 py-3 rounded font-medium text-sm w-full mt-2 cursor-default">Sign In</button>
                 </nav>
               </motion.div>
             )}
@@ -970,13 +970,13 @@ const Header: React.FC = () => {
         <div className="bg-slate-900 p-4 py-5 text-white">
           <div className="container mx-auto flex justify-between items-center max-w-[77rem]">
             <div className="flex items-center space-x-2">
-              <Link to="/">
+              <Link to="/" className="cursor-default">
                 <img src="/logoBAIMXFinal.png" alt="BAIMX Logo" className="h-11 w-auto" /> {/* Actual Logo */}
               </Link>
             </div>
             <div className="flex items-center space-x-4">
               <nav className="flex space-x-4 text-sm">
-                <a href="#" className="hover:text-gray-300 relative pr-2.5">
+                <a href="#" className="hover:text-gray-300 relative pr-2.5 cursor-default">
                   Live Feed
                   <motion.span
                     className="absolute top-0.5 right-0 block h-1.5 w-1.5 rounded-full bg-blue-500"
@@ -985,18 +985,18 @@ const Header: React.FC = () => {
                     aria-hidden="true"
                   />
                 </a>
-                <a href="#" className="hover:text-gray-300">Subscribe</a>
-                <a href="#" className="hover:text-gray-300">Prices</a>
-                <a href="#" className="hover:text-gray-300">Learn</a>
-                <a href="#" className="hover:text-gray-300">Research</a>
-                <a href="#" className="hover:text-gray-300">Licensing</a>
-                <a href="#" className="hover:text-gray-300">Launchpad</a>
-                <a href="#" className="hover:text-gray-300">API</a>
-                <Link to="/about" className="hover:text-gray-300">About</Link> {/* Corrected to use Link */}
-                <a href="#" className="hover:text-gray-300">Contact</a>
+                <a href="#" className="hover:text-gray-300 cursor-default">Subscribe</a>
+                <a href="#" className="hover:text-gray-300 cursor-default">Prices</a>
+                <a href="#" className="hover:text-gray-300 cursor-default">Learn</a>
+                <a href="#" className="hover:text-gray-300 cursor-default">Research</a>
+                <a href="#" className="hover:text-gray-300 cursor-default">Licensing</a>
+                <a href="#" className="hover:text-gray-300 cursor-default">Launchpad</a>
+                <a href="#" className="hover:text-gray-300 cursor-default">API</a>
+                <Link to="/about" className="hover:text-gray-300 cursor-default">About</Link> {/* Corrected to use Link */}
+                <a href="#" className="hover:text-gray-300 cursor-default">Contact</a>
               </nav>
               <div className="flex items-center space-x-2">
-                <button className="bg-[#0091AD] text-white px-4 py-2 rounded font-medium text-xs">Sign In</button>
+                <button className="bg-[#0091AD] text-white px-4 py-2 rounded font-medium text-xs cursor-default">Sign In</button>
                 
               </div>
             </div>
@@ -1008,21 +1008,21 @@ const Header: React.FC = () => {
           <div className="container mx-auto max-w-[77rem] flex justify-center">
             <nav className="flex justify-center space-x-5 text-sm text-gray-100">
                  {/* Repeating nav items for demo */}
-                 <a href="#" className="hover:text-white">General</a>
-                <a href="#" className="hover:text-white">BTC</a>
-                <a href="#" className="hover:text-white">ETH</a>
-                <a href="#" className="hover:text-white">USDT</a>
-                <a href="#" className="hover:text-white">XRP</a>
-                <a href="#" className="hover:text-white">SOL</a>
+                 <a href="#" className="hover:text-white cursor-default">General</a>
+                <a href="#" className="hover:text-white cursor-default">BTC</a>
+                <a href="#" className="hover:text-white cursor-default">ETH</a>
+                <a href="#" className="hover:text-white cursor-default">USDT</a>
+                <a href="#" className="hover:text-white cursor-default">XRP</a>
+                <a href="#" className="hover:text-white cursor-default">SOL</a>
 
-                <a href="#" className="hover:text-white">AVAX</a>
-                <a href="#" className="hover:text-white">DOGE</a>
-                <a href="#" className="hover:text-white">LTC</a>
-                <a href="#" className="hover:text-white">BCH</a>
-                <a href="#" className="hover:text-white">Speculative</a>
-                <a href="#" className="hover:text-white">Reports</a>
-                <a href="#" className="hover:text-white">Stables</a>
-                <a href="#" className="hover:text-white relative">
+                <a href="#" className="hover:text-white cursor-default">AVAX</a>
+                <a href="#" className="hover:text-white cursor-default">DOGE</a>
+                <a href="#" className="hover:text-white cursor-default">LTC</a>
+                <a href="#" className="hover:text-white cursor-default">BCH</a>
+                <a href="#" className="hover:text-white cursor-default">Speculative</a>
+                <a href="#" className="hover:text-white cursor-default">Reports</a>
+                <a href="#" className="hover:text-white cursor-default">Stables</a>
+                <a href="#" className="hover:text-white relative cursor-default">
                   Calendar
                   <span className="absolute -top-2.5 -right-4.5 px-1  text-[9px] font-medium bg-[#0091AD] text-black rounded-sm">New</span>
                 </a>
@@ -1459,7 +1459,7 @@ export const FeaturedSection: React.FC = () => {
           >
             <Link
               to={`/article/${additionalFeatureArticles[0].id}`}
-              className="block h-full transition-colors duration-200 group" // Removed hover:bg-gray-50
+              className="block h-full transition-colors duration-200 group cursor-default" // Removed hover:bg-gray-50
             >
               <div className="flex flex-col h-full p-8 py-8 ">
                 {/* Image Container - Larger for the combined article */}
@@ -1507,11 +1507,7 @@ export const FeaturedSection: React.FC = () => {
                 )}
                 
                 <div className="flex flex-wrap gap-2 pt-3">
-                  {additionalFeatureArticles[0].tags.map(tag => (
-                    <span key={tag} className="bg-slate-100 border border-slate-200 text-gray-700 px-3 py-1 text-xs font-medium rounded-full"> {/* Lighter border, slightly adjusted text color */}
-                      {tag}
-                    </span>
-                  ))}
+                  
                   {/* <span className="text-xs font-medium text-blue-600 ml-auto group-hover:underline flex items-center">
                     Read more
                     <ChevronRight size={12} className="ml-0.5 group-hover:translate-x-0.5 transition-transform" />
@@ -1546,7 +1542,7 @@ export const FeaturedSection: React.FC = () => {
             >
               <Link
                 to={`/article/${article.id}`}
-                className="block h-full transition-colors duration-200 group" // Removed hover:bg-gray-50
+                className="block h-full transition-colors duration-200 group cursor-default" // Removed hover:bg-gray-50
               >
                 <div className="flex flex-col h-full p-8 py-8 ">
                   {/* Image Container */}
@@ -1578,17 +1574,13 @@ export const FeaturedSection: React.FC = () => {
                   
                   {/* Tags rendered above the bottom content for both cards */}
                   <div className="flex flex-wrap gap-2 pt-2">
-                    {article.tags.slice(0, 2).map(tag => (
-                      <span key={tag} className="bg-slate-100 border border-slate-200 text-gray-700 px-3 py-1 text-xs font-medium rounded-full"> {/* Lighter border, slightly adjusted text color */}
-                        {tag}
-                      </span>
-                    ))}
+                   
                   </div>
 
                   {/* Conditional bottom content */}
                   {index === 0 && ( // For the FIRST of the two articles (Opinion Box)
                     <div className="mt-auto pt-8">
-                      <div className="p-3 bg-white border border-slate-300 rounded-md hover:border-slate-300 hover:bg-gray-50 transition-all duration-200 group cursor-pointer">
+                      <div className="p-3 bg-white border border-slate-300 rounded-md hover:border-slate-300 hover:bg-gray-50 transition-all duration-200 group cursor-default">
                         <h5 className="text-xs font-light text-gray-700 mb-2 border-b border-gray-200 pb-2">Opinion</h5>
                         <div className="flex items-center mb-2">
                           <img
@@ -1632,15 +1624,15 @@ export const FeaturedSection: React.FC = () => {
                       <div className="py-2 border-y border-gray-300">  {/* Lighter border */}
                         <div>
                           
-                          <a href="#" className="block font-medium leading-[1.1] py-1 text-md text-gray-900 hover:text-gray-500"> {/* Reverted hover to gray-500 */}
+                          <a href="#" className=" cursor-default block font-medium leading-[1.1] py-1 text-md text-gray-900 hover:text-gray-500"> {/* Reverted hover to gray-500 */}
                             Bitcoin's Price Is Falling, but the Bulls Are Still Bullish
                           </a>
                           
-                          <a href="#" className="block py-1 text-md leading-[1.1] font-medium text-gray-900 hover:text-gray-500 border-t border-gray-200 mt-1.5 pt-1.5"> {/* Reverted hover to gray-500 */}
+                          <a href="#" className=" cursor-default block py-1 text-md leading-[1.1] font-medium text-gray-900 hover:text-gray-500 border-t border-gray-200 mt-1.5 pt-1.5"> {/* Reverted hover to gray-500 */}
                             Ethereum's creator says the network is 'too slow'
                           </a>
 
-                          <a href="#" className="block py-1 text-md leading-[1.1] font-medium text-gray-900 hover:text-gray-500 border-t border-gray-200 mt-1.5 pt-1.5"> {/* Reverted hover to gray-500 */}
+                          <a href="#" className="cursor-default block py-1 text-md leading-[1.1] font-medium text-gray-900 hover:text-gray-500 border-t border-gray-200 mt-1.5 pt-1.5"> {/* Reverted hover to gray-500 */}
                             Solana is the beginning of a new era of blockchain. What's next?
                           </a>
                         </div>
@@ -1655,7 +1647,7 @@ export const FeaturedSection: React.FC = () => {
       </div>
 
       {/* --- NEW: Top Stories / Latest Section --- */}
-      <div className=" grid grid-cols-1 md:grid-cols-4  bg-white border-b border-gray-300 "> {/* Lighter bottom border */}
+      <div className=" grid grid-cols-1 md:grid-cols-4  bg-white border-b border-gray-300 cursor-default"> {/* Lighter bottom border */}
 
         {/* Left Column: Top Stories (3/4) */}
         <div className="md:col-span-3  border-r border-gray-300"> {/* Lighter right border */}
@@ -1666,7 +1658,7 @@ export const FeaturedSection: React.FC = () => {
           <div className="grid grid-cols-1  md:grid-cols-5 gap-0 mb-6 border-b border-gray-300 "> {/* Lighter bottom border */}
             {/* First Featured Story - Static */}
             <div className="md:col-span-2 border-r border-gray-300 p-8 pt-8"> {/* Lighter right border */}
-              <Link to="/article/static-1" className="group">
+              <Link to="/article/static-1" className="group cursor-default">
                 {/* Image Container */}
                 <div className="relative  overflow-hidden">
                   <img 
@@ -1689,23 +1681,17 @@ export const FeaturedSection: React.FC = () => {
                 </div>
                 
                 {/* Tags */}
-                <div className="flex flex-wrap gap-1 mt-1 mb-8">
-                  <span className="bg-slate-100 border border-slate-200 text-gray-700 px-3 py-1 text-xs font-medium rounded-full"> {/* Lighter border, slightly adjusted text color */}
-                    Politics
-                  </span>
-                  <span className="bg-slate-100 border border-slate-200 text-gray-700 px-3 py-1 text-xs font-medium rounded-full"> {/* Lighter border, slightly adjusted text color */}
-                    Venezuela
-                  </span>
-                </div>
+                
+
               </Link>
-              <div className="mt-auto pt-4"> 
+              <div className="mt-auto pt-4 "> 
                       <div className="pt-3 border-t border-gray-300">  {/* Lighter border */}
                         <div>
-                          <a href="#" className="block font-medium leading-[1.1] py-1 text-md text-gray-900 hover:text-gray-500"> {/* Reverted hover to gray-500 */}
+                          <a href="#" className="block cursor-default font-medium leading-[1.1] py-1 text-md text-gray-900 hover:text-gray-500"> {/* Reverted hover to gray-500 */}
                             Putin Offers Talks With Ukraine on May 15 But Skirts Truce
                           </a>
                           
-                          <a href="#" className="block py-1 text-md leading-[1.1] font-medium text-gray-900 hover:text-gray-500 border-t border-gray-200 mt-1.5 pt-1.5"> {/* Reverted hover to gray-500 */}
+                          <a href="#" className="block py-1 text-md cursor-default leading-[1.1] font-medium text-gray-900 hover:text-gray-500 border-t border-gray-200 mt-1.5 pt-1.5"> {/* Reverted hover to gray-500 */}
                             What's Next on Russia Sanctions If Putin Balks at Ceasefire Call
                           </a>
                         </div>
@@ -1714,10 +1700,10 @@ export const FeaturedSection: React.FC = () => {
             </div>
 
             {/* Second Featured Story - Static */}
-            <div className="md:col-span-3 p-8 px-8 ">
-              <Link to="/article/static-2" className="group">
+            <div className="md:col-span-3 p-8 px-8 cursor-default">
+              <Link to="/article/static-2" className="group cursor-default">
                 {/* Image Container */}
-                <div className="relative overflow-hidden">
+                <div className="relative overflow-hidden cursor-default">
                   <img 
                     src="/Oil.png"
                     alt="" 
@@ -1728,7 +1714,7 @@ export const FeaturedSection: React.FC = () => {
                 <p className="text-[10px] text-gray-600 mt-1 mb-2 text-right pr-1">BAIMX Media</p> {/* Added caption */}
                 
                 {/* Title */}
-                <h3 className="text-3xl font-bold leading-[1.05] mb-1 text-gray-900 group-hover:text-gray-500 transition-colors duration-200"> {/* Reverted hover to gray-500 */}
+                <h3 className=" text-3xl font-bold leading-[1.05] mb-1 text-gray-900 group-hover:text-gray-500 transition-colors duration-200"> {/* Reverted hover to gray-500 */}
                   Trump's Cabinet Defends Effort to Save Signal Chat Records
                 </h3>
                 
@@ -1741,22 +1727,14 @@ export const FeaturedSection: React.FC = () => {
                       Bitcoin's price is falling, but the bulls are still bullish. Some analysts are calling for a 100% rally. MicroStrategy is buying more bitcoin.
                     </p>
                 
-                {/* Tags */}
-                <div className="flex flex-wrap gap-1 mt-4">
-                  <span className="bg-slate-100 border border-slate-200 text-gray-700 px-3 py-1 text-xs font-medium rounded-full"> {/* Lighter border, slightly adjusted text color */}
-                    Politics
-                  </span>
-                  <span className="bg-slate-100 border border-slate-200 text-gray-700 px-3 py-1 text-xs font-medium rounded-full"> {/* Lighter border, slightly adjusted text color */}
-                    US
-                  </span>
-                </div>
+                
               </Link>
             </div>
           </div>
 
 
               {/* LONG STORY - Static - Modified for consistency */}
-          <Link to="/article/static-border-strife" className="group flex flex-row w-full border-b border-gray-300 pb-6 px-8 pt-2  transition-colors duration-150"> {/* Lighter bottom border */}
+          <Link to="/article/static-border-strife" className="group flex flex-row w-full border-b border-gray-300 pb-6 px-8 pt-2 transition-colors duration-150 cursor-default"> {/* Lighter bottom border */}
             {/* Image Container and Caption */}
             <div className="flex-shrink-0 w-92 mr-6">
               <img src="/channel.png" alt="Border strife in India" className="w-full h-52 object-cover" />
@@ -1772,26 +1750,15 @@ export const FeaturedSection: React.FC = () => {
               <div className="flex items-center text-xs text-gray-600 mb-3"> {/* Slightly darker meta text */}
                 <span>4h ago • 6 min read</span> {/* Added placeholder meta info */}
               </div>
-              {/* Tags */}
-              <div className="flex flex-wrap gap-1.5 ">
-                <span className="bg-slate-100 border border-slate-200 text-gray-700 px-3 py-1 text-xs font-medium rounded-full"> {/* Lighter border, slightly adjusted text color */}
-                  Politics {/* Added placeholder tag */}
-                </span>
-                <span className="bg-slate-100 border border-slate-200 text-gray-700 px-3 py-1 text-xs font-medium rounded-full"> {/* Lighter border, slightly adjusted text color */}
-                  India {/* Added placeholder tag */}
-                </span>
-                 <span className="bg-slate-100 border border-slate-200 text-gray-700 px-3 py-1 text-xs font-medium rounded-full"> {/* Lighter border, slightly adjusted text color */}
-                  Geopolitics {/* Added placeholder tag */}
-                </span>
-              </div>
+             
             </div>
           </Link>
           
           {/* Regular Stories Grid - Static - Changed to 3x2 */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 px-8 py-8"> {/* Changed to sm:grid-cols-3 and adjusted gap */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 px-8 py-8"> {/* Changed to sm:grid-cols-3 and adjusted gap */}
             {/* Using slice(2, 8) for static content from initialArticles */}
             {initialArticles.slice(2, 8).map((article) => ( // Changed source to initialArticles
-              <Link key={`top-${article.id}`} to={`/article/${article.id}`} className="group flex flex-col transition-colors duration-150 py-1"> {/* Changed to flex-col */}
+              <Link key={`top-${article.id}`} to={`/article/${article.id}`} className="group flex flex-col transition-colors duration-150 py-1 cursor-default"> {/* Changed to flex-col */}
                 {/* Image - Full width, fixed height & Caption */}
                 <div>
                   <div className="flex-shrink-0 w-full h-44"> {/* Removed mb-3 from here */}
@@ -1812,16 +1779,7 @@ export const FeaturedSection: React.FC = () => {
                    <p className="text-xs text-gray-600 mb-1"> {/* Slightly darker meta text */}
                     {article.time} • {article.read}
                   </p>
-                   {/* Tags - Ensured placement and style */}
-                   {article.tags.length > 0 && (
-                       <div className="flex flex-wrap gap-1 mt-auto pt-1"> {/* Added mt-auto and pt-1 */}
-                           {article.tags.slice(0, 2).map(tag => (
-                              <span key={tag} className="bg-slate-100 border border-slate-200 text-gray-700 px-3 py-1 text-xs font-medium rounded-full"> {/* Lighter border, slightly adjusted text color */}
-                                {tag}
-                              </span>
-                           ))}
-                       </div>
-                   )}
+                   
                 </div>
               </Link>
             ))}
@@ -1841,7 +1799,7 @@ export const FeaturedSection: React.FC = () => {
               <Link 
                 key={`latest-${article.id}-${index}`} // Added index to key for uniqueness
                 to={`/article/${article.id}`} 
-                className="block px-3 py-2 border-b border-gray-200 hover:bg-gray-50/70 transition-colors duration-150 group"
+                className="block px-3 py-2 border-b border-gray-200 hover:bg-gray-50/70 transition-colors duration-150 group cursor-default"
               >
                 <div className="flex items-start space-x-3"> {/* items-start for vertical alignment if title wraps */}
                   <span className="text-xs text-gray-500 w-14 flex-shrink-0 pt-0.5 whitespace-nowrap"> {/* Time ago, pt to align with first line of title */}
@@ -2057,7 +2015,7 @@ export const RecentSection: React.FC = () => {
             <Link 
               key={article.id}
               to={`/article/${article.id}`}
-              className={`block relative overflow-hidden group transition-all duration-300 bg-white border border-gray-400 shadow-sm ${gridClasses}`} // Removed hover:shadow-lg
+              className={`block relative overflow-hidden group transition-all duration-300 bg-white border border-gray-400 shadow-sm cursor-default ${gridClasses}`} // Removed hover:shadow-lg
             >
               <div className="absolute inset-0">
                 {article.imageUrl ? (
@@ -2097,13 +2055,7 @@ export const RecentSection: React.FC = () => {
                   )}
                   
                   {/* Tags - MOVED and RESTYLED */}
-                  <div className="flex flex-wrap gap-1.5 mt-1 mb-1"> {/* Adjusted margin */}
-                      {article.tags.map(tag => (
-                        <span key={tag} className="bg-slate-700/70 border border-slate-500 text-slate-100 px-3 py-1 text-[10px] font-medium rounded-full backdrop-blur-sm">
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
+                 
 
                   {/* Bottom row - potentially empty now */}
                   <div className="flex items-center justify-between mt-auto">
@@ -2136,22 +2088,8 @@ export const HomePage: React.FC = () => {
  
 
 
-      <CTERMINALAD />
-
-      {/* Crypto Sections */}
-      <div className="container mx-auto max-w-[77rem]">
-        <BTCSection />
-        <ETHSection />
-        <XRPSection />
-        <SOLSection />
-        <SpeculativeSection />
-        
-        {/* Real-time Prices */}
-       
-        
-        {/* Load More Button */}
-        
-      </div>
+  
+      
     </>
   );
 };
