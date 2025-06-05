@@ -211,7 +211,7 @@ export const MiniTokenChart: React.FC<MiniTokenChartProps> = memo(({
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className={`text-xl mt-2 font-regular leading-tight transition-colors duration-300 ${priceChangeColor}`}
+            className={`text-xl mt-2 font-medium leading-tight transition-colors duration-300 ${priceChangeColor}`}
           >
             ${currentPrice < 0.01 
               ? currentPrice.toFixed(8)

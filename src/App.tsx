@@ -1444,206 +1444,7 @@ export const FeaturedSection: React.FC = () => {
       
       {/* Additional Feature Articles row */}
       <div className="bg-white border-gray-400">
-        <div className="grid grid-cols-1 md:grid-cols-7 divide-y border-b border-gray-400 md:divide-y-0 md:divide-x divide-gray-400">
-          {/* First (larger) article */}
-          <motion.div
-            key={`feature-${additionalFeatureArticles[0].id}`}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ 
-              duration: 0.4,
-              delay: 0.1,
-              ease: "easeOut" 
-            }}
-            className="md:col-span-3 flex-grow flex-shrink-0"
-          >
-            <Link
-              to={`/article/${additionalFeatureArticles[0].id}`}
-              className="block h-full transition-colors duration-200 group cursor-default" // Removed hover:bg-gray-50
-            >
-              <div className="flex flex-col h-full p-8 py-8 ">
-                {/* Image Container - Larger for the combined article */}
-                <div className="relative overflow-hidden">
-                  <img 
-                    src={additionalFeatureArticles[0].imageUrl || '/placeholder.jpg'} 
-                    alt="" 
-                    className="w-full h-76 object-cover transition-transform duration-500"
-                  />
-                  {/* Removed overlay */}
-                </div>
-                <p className="text-[10px] text-gray-600 mt-1 mb-2 text-right pr-1">BAIMX Media</p> {/* Added caption */}
-
-                <h4 className="text-3xl font-bold leading-[1.05] mb-1 text-gray-900 group-hover:text-gray-500 transition-colors duration-200">
-                  {additionalFeatureArticles[0].title}
-                </h4>
-                <div className="flex items-center text-xs text-gray-600 mb-3"> {/* Slightly darker meta text */}
-                  <span>{additionalFeatureArticles[0].time} • {additionalFeatureArticles[0].read}</span>
-                  {additionalFeatureArticles[0].xoutValue !== undefined && additionalFeatureArticles[0].xoutSymbol && (
-                    <>
-                      <span className="mx-2 text-gray-300">|</span>
-                      <span className="font-medium">
-                        <span className="text-gray-500">XOUT:</span>{' '}
-                        <span className={additionalFeatureArticles[0].xoutValue >= 0 ? 'text-green-500' : 'text-red-500'}>
-                          {additionalFeatureArticles[0].xoutValue >= 0 ? '+' : ''}{additionalFeatureArticles[0].xoutValue.toFixed(2)}% {additionalFeatureArticles[0].xoutSymbol}
-                        </span>
-                      </span>
-                    </>
-                  )}
-                </div>
-                
-                {additionalFeatureArticles[0].preview && (
-                  <div 
-                    className="relative mb-4" 
-                    style={{
-                      maxHeight: '4.5em',
-                      overflow: 'hidden',
-                     
-                    }}
-                  >
-                    <p className="text-sm line-clamp-3 text-gray-600 leading-[1.2] font-regular">
-                      {additionalFeatureArticles[0].preview}
-                    </p>
-                  </div>
-                )}
-                
-                <div className="flex flex-wrap gap-2 pt-3">
-                  
-                  {/* <span className="text-xs font-medium text-blue-600 ml-auto group-hover:underline flex items-center">
-                    Read more
-                    <ChevronRight size={12} className="ml-0.5 group-hover:translate-x-0.5 transition-transform" />
-                  </span> */}
-                </div>
-               
-              </div>
-              <div className="bottom-0 left-0 right-0 z-20 -mt-1">
-                <Progress 
-                  value={progress} 
-                  className="h-1 w-full bg-black/20" 
-                  aria-label="Time until next article rotation" 
-                />
-              </div>
-              
-            </Link>
-            
-          </motion.div>
-
-          {/* Remaining two articles */}
-          {additionalFeatureArticles.slice(2, 4).map((article, index) => (
-            <motion.div
-              key={`feature-${article.id}`}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ 
-                duration: 0.4,
-                delay: (index + 1) * 0.1,
-                ease: "easeOut" 
-              }}
-              className="md:col-span-2 flex-grow flex-shrink-0"
-            >
-              <Link
-                to={`/article/${article.id}`}
-                className="block h-full transition-colors duration-200 group cursor-default" // Removed hover:bg-gray-50
-              >
-                <div className="flex flex-col h-full p-8 py-8 ">
-                  {/* Image Container */}
-                  <div className="relative overflow-hidden">
-                    <img 
-                      src={article.imageUrl || '/placeholder.jpg'} 
-                      alt="" 
-                      className="w-full h-48 object-cover transition-transform duration-500"
-                    />
-                    {/* Removed overlay */}
-                  </div>
-                  <p className="text-[10px] text-gray-600 mt-1 mb-2 text-right pr-1">BAIMX Media</p> {/* Added caption */}
-
-                  <h4 className="text-2xl font-bold mb-3 text-gray-900 line-clamp-3 group-hover:text-gray-500 leading-[1.05] transition-colors duration-200">{article.title}</h4> {/* Reverted hover to gray-500 */}
-                  <div className="flex items-center text-xs text-gray-600 mb-2"> {/* Slightly darker meta text */}
-                    <span>{article.time} • {article.read}</span>
-                    {article.xoutValue !== undefined && article.xoutSymbol && (
-                      <>
-                        <span className="mx-2 text-gray-300">|</span>
-                        <span className="font-medium">
-                          <span className="text-gray-500">XOUT:</span>{' '}
-                          <span className={article.xoutValue >= 0 ? 'text-green-500' : 'text-red-500'}>
-                            {article.xoutValue >= 0 ? '+' : ''}{article.xoutValue.toFixed(2)}% {article.xoutSymbol}
-                          </span>
-                        </span>
-                      </>
-                    )}
-                  </div>
-                  
-                  {/* Tags rendered above the bottom content for both cards */}
-                  <div className="flex flex-wrap gap-2 pt-2">
-                   
-                  </div>
-
-                  {/* Conditional bottom content */}
-                  {index === 0 && ( // For the FIRST of the two articles (Opinion Box)
-                    <div className="mt-auto pt-8">
-                      <div className="p-3 bg-white border border-slate-300 rounded-md hover:border-slate-300 hover:bg-gray-50 transition-all duration-200 group cursor-default">
-                        <h5 className="text-xs font-light text-gray-700 mb-2 border-b border-gray-200 pb-2">Opinion</h5>
-                        <div className="flex items-center mb-2">
-                          <img
-                            src="/face.webp" // Placeholder image
-                            alt="Author"
-                            className="w-6 h-6 rounded-full mr-2 object-cover border border-gray-300"
-                          />
-                          <span className="text-xs font-medium text-gray-700">Matthew Bailet</span>
-                        </div>
-                        <p className="text-sm font-semibold text-slate-700 hover:text-black leading-[1.1] transition-colors mb-3">
-                          Here's why bitcoin is potentially poised for a 100% rally
-                        </p>
-                        {/* BTC MiniTokenChart integration */}
-                        <div className="h-[100px] w-full my-0"> {/* Container for the chart, adjust height as needed */}
-                          {btcChartData && !btcChartError && (
-                            <MiniTokenChartLight // Changed to MiniTokenChartLight
-                              symbol="BTC"
-                              chartOption={btcChartData.option}
-                              percentageChange={btcChartData.percentageChange}
-                              price={btcChartData.price}
-                              error={null}
-                            />
-                          )}
-                          {btcChartError && (
-                            <div className="flex items-center justify-center h-full text-xs text-red-500">
-                              BTC Chart: {btcChartError}
-                            </div>
-                          )}
-                          {!btcChartData && !btcChartError && (
-                            <div className="flex items-center justify-center h-full text-xs text-gray-400">
-                              Loading BTC Chart...
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {index === 1 && ( // For the SECOND of the two articles (existing related links)
-                    <div className="mt-auto py-4"> 
-                      <div className="py-2 border-y border-gray-300">  {/* Lighter border */}
-                        <div>
-                          
-                          <a href="#" className=" cursor-default block font-medium leading-[1.1] py-1 text-md text-gray-900 hover:text-gray-500"> {/* Reverted hover to gray-500 */}
-                            Bitcoin's Price Is Falling, but the Bulls Are Still Bullish
-                          </a>
-                          
-                          <a href="#" className=" cursor-default block py-1 text-md leading-[1.1] font-medium text-gray-900 hover:text-gray-500 border-t border-gray-200 mt-1.5 pt-1.5"> {/* Reverted hover to gray-500 */}
-                            Ethereum's creator says the network is 'too slow'
-                          </a>
-
-                          <a href="#" className="cursor-default block py-1 text-md leading-[1.1] font-medium text-gray-900 hover:text-gray-500 border-t border-gray-200 mt-1.5 pt-1.5"> {/* Reverted hover to gray-500 */}
-                            Solana is the beginning of a new era of blockchain. What's next?
-                          </a>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </Link>
-            </motion.div>
-          ))}
-        </div>
+    
       </div>
 
       {/* --- NEW: Top Stories / Latest Section --- */}
@@ -1676,9 +1477,7 @@ export const FeaturedSection: React.FC = () => {
                 </h3>
                 
                 {/* Meta info */}
-                <div className="flex items-center text-xs text-gray-600 mb-2"> {/* Slightly darker meta text */}
-                  <span>2h ago • 5 min read</span>
-                </div>
+           
                 
                 {/* Tags */}
                 
@@ -1714,17 +1513,14 @@ export const FeaturedSection: React.FC = () => {
                 <p className="text-[10px] text-gray-600 mt-1 mb-2 text-right pr-1">BAIMX Media</p> {/* Added caption */}
                 
                 {/* Title */}
-                <h3 className=" text-3xl font-bold leading-[1.05] mb-1 text-gray-900 group-hover:text-gray-500 transition-colors duration-200"> {/* Reverted hover to gray-500 */}
+                <h3 className=" text-3xl font-bold leading-[1.05] mb-2 text-gray-900 group-hover:text-gray-500 transition-colors duration-200"> {/* Reverted hover to gray-500 */}
                   Trump's Cabinet Defends Effort to Save Signal Chat Records
                 </h3>
                 
-                {/* Meta info */}
-                <div className="flex items-center text-xs text-gray-600 mb-2"> {/* Slightly darker meta text */}
-                  <span>3h ago • 7 min read</span>
-                </div>
+               
 
-                <p className="text-sm line-clamp-3 text-gray-600 leading-[1.2] font-regular">
-                      Bitcoin's price is falling, but the bulls are still bullish. Some analysts are calling for a 100% rally. MicroStrategy is buying more bitcoin.
+                <p className="text-sm line-clamp-3 text-gray-600 leading-[1.2] font-regular ">
+                      Bitcoin's price is falling, but the bulls are still bullish. Some analysts are calling for a 100% rally. MicroStrategy is buying more bitcoin. Bitcoin's price is falling, but the bulls are still bullish. Some analysts are calling for a 100% rally. MicroStrategy is buying more bitcoin.
                     </p>
                 
                 
@@ -1734,22 +1530,23 @@ export const FeaturedSection: React.FC = () => {
 
 
               {/* LONG STORY - Static - Modified for consistency */}
-          <Link to="/article/static-border-strife" className="group flex flex-row w-full border-b border-gray-300 pb-6 px-8 pt-2 transition-colors duration-150 cursor-default"> {/* Lighter bottom border */}
+          <Link to="/article/static-border-strife" className="group flex flex-col md:flex-row w-full border-b border-gray-300 pb-6 px-4 md:px-8 pt-2 transition-colors duration-150 cursor-default"> {/* Lighter bottom border */}
             {/* Image Container and Caption */}
-            <div className="flex-shrink-0 w-92 mr-6">
+            <div className="flex-shrink-0 w-full md:w-92 mb-4 md:mb-0 mr-0 md:mr-6">
               <img src="/channel.png" alt="Border strife in India" className="w-full h-52 object-cover" />
               <p className="text-[10px] text-gray-600 mt-1 text-right">BAIMX Media</p> {/* Added caption */}
             </div>
             {/* Text Content Container */}
             <div className="flex-grow flex flex-col">
               {/* Title */}
-              <h2 className="text-3xl font-semibold mb-2 text-black group-hover:text-gray-500 transition-colors duration-200 pb-0 leading-[1] max-w-[430px]"> {/* Reverted hover to gray-500 */}
+              <h2 className="text-xl md:text-3xl font-semibold mb-2 text-black group-hover:text-gray-500 transition-colors duration-200 pb-0 leading-[1] max-w-full md:max-w-[430px]"> {/* Reverted hover to gray-500 */}
                 Border Strife Triggers Food Hoarding, Canceled Trips in India
               </h2>
-              {/* Meta Info */}
-              <div className="flex items-center text-xs text-gray-600 mb-3"> {/* Slightly darker meta text */}
-                <span>4h ago • 6 min read</span> {/* Added placeholder meta info */}
-              </div>
+              {/* Mock Preview Text */}
+              <p className="text-sm line-clamp-3 text-gray-600 leading-[1.2] font-regular md:max-w-[430px]">
+                As tensions rise along the border, local communities are responding with increased food hoarding and travel cancellations. Experts warn that continued unrest could disrupt supply chains and daily life for millions.
+              </p>
+          
              
             </div>
           </Link>
@@ -1768,17 +1565,14 @@ export const FeaturedSection: React.FC = () => {
                       <div className="w-full h-full bg-gradient-to-br from-slate-200 to-slate-300 flex items-center justify-center text-slate-500 text-xs">No Image</div>
                     )}
                   </div>
-                  <p className="text-[10px] text-gray-600 mt-1 mb-2 text-right pr-1">BAIMX Media</p> {/* Added caption & mb-2 */}
+                  <p className="text-[10px] text-gray-600 mt-1 mb-1 text-right pr-1">BAIMX Media</p> {/* Added caption & mb-2 */}
                 </div>
                 {/* Content - Moved below image */}
                 <div className="flex-grow flex flex-col">
-                  <h4 className="text-lg font-bold line-clamp-2 text-gray-900 mb-1 group-hover:text-gray-500 transition-colors duration-200 leading-[1]"> {/* Reverted hover to gray-500 */}
+                  <h4 className="text-xl font-bold line-clamp-2 text-gray-900 mb-1 group-hover:text-gray-500 transition-colors duration-200 leading-[1]"> {/* Reverted hover to gray-500 */}
                     {article.title}
                   </h4>
-                   {/* Meta Info */}
-                   <p className="text-xs text-gray-600 mb-1"> {/* Slightly darker meta text */}
-                    {article.time} • {article.read}
-                  </p>
+              
                    
                 </div>
               </Link>
@@ -1805,7 +1599,7 @@ export const FeaturedSection: React.FC = () => {
                   <span className="text-xs text-gray-500 w-14 flex-shrink-0 pt-0.5 whitespace-nowrap"> {/* Time ago, pt to align with first line of title */}
                     {article.time}
                   </span>
-                  <h5 className="text-sm font-semibold text-gray-800 group-hover:text-gray-500 line-clamp-3 leading-tight transition-colors duration-200 flex-grow">
+                  <h5 className="text-sm font-medium text-gray-800 group-hover:text-gray-500 line-clamp-3 leading-tight transition-colors duration-200 flex-grow">
                     {article.title}
                   </h5>
                 </div>
@@ -1893,6 +1687,187 @@ export const FeaturedSection: React.FC = () => {
 
         </div>
       </div>
+      <div className="grid grid-cols-1 md:grid-cols-7 divide-y border-b border-gray-400 md:divide-y-0 md:divide-x divide-gray-400">
+          {/* First (larger) article */}
+          <motion.div
+            key={`feature-${additionalFeatureArticles[0].id}`}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ 
+              duration: 0.4,
+              delay: 0.1,
+              ease: "easeOut" 
+            }}
+            className="md:col-span-3 flex-grow flex-shrink-0"
+          >
+            <Link
+              to={`/article/${additionalFeatureArticles[0].id}`}
+              className="block h-full transition-colors duration-200 group cursor-default" // Removed hover:bg-gray-50
+            >
+              <div className="flex flex-col h-full p-8 py-8 ">
+                {/* Image Container - Larger for the combined article */}
+                <div className="relative overflow-hidden">
+                  <img 
+                    src={additionalFeatureArticles[0].imageUrl || '/placeholder.jpg'} 
+                    alt="" 
+                    className="w-full h-56 md:h-76 object-cover transition-transform duration-500"
+                  />
+                  {/* Removed overlay */}
+                </div>
+                <p className="text-[10px] text-gray-600 mt-1 mb-2 text-right pr-1">BAIMX Media</p> {/* Added caption */}
+
+                <h4 className="text-3xl font-bold leading-[1.05] mb-1 text-gray-900 group-hover:text-gray-500 transition-colors duration-200">
+                  {additionalFeatureArticles[0].title}
+                </h4>
+                <div className="flex items-center text-xs text-gray-600 mb-3"> {/* Slightly darker meta text */}
+                 
+                  {additionalFeatureArticles[0].xoutValue !== undefined && additionalFeatureArticles[0].xoutSymbol && (
+                    <>
+                     
+                    </>
+                  )}
+                </div>
+                
+                {additionalFeatureArticles[0].preview && (
+                  <div 
+                    className="relative mb-4" 
+                    style={{
+                      maxHeight: '4.5em',
+                      overflow: 'hidden',
+                     
+                    }}
+                  >
+                    <p className="text-sm line-clamp-3 text-gray-600 leading-[1.2] font-regular">
+                      {additionalFeatureArticles[0].preview}
+                    </p>
+                  </div>
+                )}
+                
+                <div className="flex flex-wrap gap-2 pt-3">
+                  
+                  {/* <span className="text-xs font-medium text-blue-600 ml-auto group-hover:underline flex items-center">
+                    Read more
+                    <ChevronRight size={12} className="ml-0.5 group-hover:translate-x-0.5 transition-transform" />
+                  </span> */}
+                </div>
+               
+              </div>
+              <div className="bottom-0 left-0 right-0 z-20 -mt-1">
+                <Progress 
+                  value={progress} 
+                  className="h-1 w-full bg-black/20" 
+                  aria-label="Time until next article rotation" 
+                />
+              </div>
+              
+            </Link>
+            
+          </motion.div>
+
+          {/* Remaining two articles */}
+          {additionalFeatureArticles.slice(2, 4).map((article, index) => (
+            <motion.div
+              key={`feature-${article.id}`}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ 
+                duration: 0.4,
+                delay: (index + 1) * 0.1,
+                ease: "easeOut" 
+              }}
+              className="md:col-span-2 flex-grow flex-shrink-0"
+            >
+              <Link
+                to={`/article/${article.id}`}
+                className="block h-full transition-colors duration-200 group cursor-default" // Removed hover:bg-gray-50
+              >
+                <div className="flex flex-col h-full p-8 py-8 ">
+                  {/* Image Container */}
+                  <div className="relative overflow-hidden">
+                    <img 
+                      src={article.imageUrl || '/placeholder.jpg'} 
+                      alt="" 
+                      className="w-full h-48 object-cover transition-transform duration-500"
+                    />
+                    {/* Removed overlay */}
+                  </div>
+                  <p className="text-[10px] text-gray-600 mt-1 mb-2 text-right pr-1">BAIMX Media</p> {/* Added caption */}
+
+                  <h4 className="text-2xl font-bold mb-3 text-gray-900  group-hover:text-gray-500 leading-[1.05] transition-colors duration-200">{article.title}</h4> {/* Reverted hover to gray-500 */}
+                 
+                  
+                  {/* Tags rendered above the bottom content for both cards */}
+                  <div className="flex flex-wrap gap-2 pt-2">
+                   
+                  </div>
+
+                  {/* Conditional bottom content */}
+                  {index === 0 && ( // For the FIRST of the two articles (Opinion Box)
+                    <div className="mt-auto pt-2">
+                      <div className="p-3 bg-white border border-slate-300 rounded-md hover:border-slate-300 hover:bg-gray-50 transition-all duration-200 group cursor-default">
+                        <h5 className="text-xs font-light text-gray-700 mb-2 border-b border-gray-200 pb-2">Opinion</h5>
+                        <div className="flex items-center mb-2">
+                          <img
+                            src="/face.webp" // Placeholder image
+                            alt="Author"
+                            className="w-6 h-6 rounded-full mr-2 object-cover border border-gray-300"
+                          />
+                          <span className="text-xs font-medium text-gray-700">Matthew Bailet</span>
+                        </div>
+                        <p className="text-sm font-semibold text-slate-700 hover:text-black leading-[1.1] transition-colors mb-3">
+                          Here's why bitcoin is potentially poised for a 100% rally
+                        </p>
+                        {/* BTC MiniTokenChart integration */}
+                        <div className="h-[100px] w-full my-0"> {/* Container for the chart, adjust height as needed */}
+                          {btcChartData && !btcChartError && (
+                            <MiniTokenChartLight // Changed to MiniTokenChartLight
+                              symbol="BTC"
+                              chartOption={btcChartData.option}
+                              percentageChange={btcChartData.percentageChange}
+                              price={btcChartData.price}
+                              error={null}
+                            />
+                          )}
+                          {btcChartError && (
+                            <div className="flex items-center justify-center h-full text-xs text-red-500">
+                              BTC Chart: {btcChartError}
+                            </div>
+                          )}
+                          {!btcChartData && !btcChartError && (
+                            <div className="flex items-center justify-center h-full text-xs text-gray-400">
+                              Loading BTC Chart...
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {index === 1 && ( // For the SECOND of the two articles (existing related links)
+                    <div className="mt-auto py-4"> 
+                      <div className="py-2 border-y border-gray-300">  {/* Lighter border */}
+                        <div>
+                          
+                          <a href="#" className=" cursor-default block font-medium leading-[1.1] py-1 text-md text-gray-900 hover:text-gray-500"> {/* Reverted hover to gray-500 */}
+                            Bitcoin's Price Is Falling, but the Bulls Are Still Bullish
+                          </a>
+                          
+                          <a href="#" className=" cursor-default block py-1 text-md leading-[1.1] font-medium text-gray-900 hover:text-gray-500 border-t border-gray-200 mt-1.5 pt-1.5"> {/* Reverted hover to gray-500 */}
+                            Ethereum's creator says the network is 'too slow'
+                          </a>
+
+                          <a href="#" className="cursor-default block py-1 text-md leading-[1.1] font-medium text-gray-900 hover:text-gray-500 border-t border-gray-200 mt-1.5 pt-1.5"> {/* Reverted hover to gray-500 */}
+                            Solana is the beginning of a new era of blockchain. What's next?
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </Link>
+            </motion.div>
+          ))}
+        </div>
       {/* --- END: Top Stories / Latest Section --- */}
       <div className="">
       <PricesMainView />

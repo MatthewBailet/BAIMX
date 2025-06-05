@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence, useScroll, useSpring, useTransform } from 'framer-motion';
-import { ChevronUp, ChevronDown, CheckCheck, Filter, ChevronLeft, ChevronRight, Search as SearchIcon, X as XIcon, Mail, Lock, Eye, EyeOff, User, ArrowRight } from 'lucide-react';
+import { ChevronUp, ChevronDown, CheckCheck, Filter, ChevronLeft, ChevronRight, Search as SearchIcon, X as XIcon, Mail, Lock, Eye, EyeOff, User, ArrowRight, Menu as MenuIcon, TrendingUp, TrendingDown } from 'lucide-react';
 import { MiniTokenChart } from '../MiniTokenChart';
 import { LoadingCubes } from '../LoadingCubes';
 import { coins, INITIAL_PRICES } from '../../App';
@@ -242,17 +242,15 @@ const SignUpModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpe
 
               <div className="space-y-2 mb-6">
                 {[ 
-                  { icon: "/google-icon.svg", text: "Continue with Google", alt: "Google" },
-                  { icon: "/facebook-icon.svg", text: "Continue with Facebook", alt: "Facebook" },
+                  { icon: "/google-icon.png", text: "Continue with Google", alt: "Google" },
                   { icon: "/apple-icon.svg", text: "Continue with Apple", alt: "Apple" },
-                  { icon: "/twitter-icon.svg", text: "Continue with Twitter", alt: "Twitter" },
-                  { text: "Continue with BBA" } // Bloomberg Anywhere - no standard icon, using text
+                  { text: "Continue with Phone number" } // Bloomberg Anywhere - no standard icon, using text
                 ].map((item, index) => (
                   <button 
                     key={index}
                     className="w-96 mx-auto flex justify-center items-center py-2.5 px-4 border border-gray-400 text-sm font-medium text-black hover:bg-gray-50 transition-colors"
                   >
-                    {item.icon && <img src={item.icon} alt={item.alt || ''} className="h-5 w-5 mr-2.5" />}
+                    {item.icon && <img src={item.icon} alt={item.alt || ''} className="h-5 mr-2.5" />}
                     {item.text}
                   </button>
                 ))}
@@ -269,6 +267,65 @@ const SignUpModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpe
         </motion.div>
       )}
     </AnimatePresence>
+  );
+};
+
+// Helper function to format price for ticker display
+const formatPriceTicker = (price: number): string => {
+  if (price >= 1) {
+    return `$${price.toFixed(2)}`;
+  } else if (price >= 0.01) {
+    return `$${price.toFixed(4)}`;
+  } else {
+    return `$${price.toFixed(6)}`;
+  }
+};
+
+// Ticker-style component for mobile collapsed view - IDENTICAL to ticker bar
+const MobileTickerItem: React.FC<{
+  symbol: string;
+  price: number;
+  percentageChange: number;
+  index: number;
+}> = ({ symbol, price, percentageChange, index }) => {
+  const isPositive = percentageChange >= 0;
+  
+  return (
+    <motion.div
+      key={symbol}
+      initial={{ opacity: 0, y: 20, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ 
+        duration: 0.5, 
+        delay: index * 0.08,
+        ease: [0.2, 0.65, 0.3, 0.9]
+      }}
+      className="inline-flex items-center mx-1 mt-2 px-2 flex-shrink-0 bg-gray-900 rounded-md border border-gray-700 py-2 px-2 cursor-default"
+      style={{
+        transition: 'font-size 0.2s ease-in-out',
+      }}
+    >
+      <span className="font-medium mr-1.5 text-gray-100 text-xs">
+        {symbol.toUpperCase()}
+      </span>
+      {isPositive ? (
+        <TrendingUp
+          size={12}
+          className="mr-0.5 text-green-500 transition-all"
+        />
+      ) : (
+        <TrendingDown
+          size={12}
+          className="mr-0.5 text-red-500 transition-all"
+        />
+      )}
+      <span className="mr-1 text-gray-200 text-xs">
+        {formatPriceTicker(price)}
+      </span>
+      <span className={`${isPositive ? 'text-green-500' : 'text-red-500'} text-xs`}>
+        {isPositive ? '+' : ''}{percentageChange.toFixed(2)}%
+      </span>
+    </motion.div>
   );
 };
 
@@ -412,10 +469,12 @@ export const Header: React.FC = () => {
   const [selectedInterval, setSelectedInterval] = useState<string>('24h');
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [isSignUpModalOpen, setIsSignUpModalOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); // Add mobile menu state
+  const [isMobileChartsExpanded, setIsMobileChartsExpanded] = useState(false); // Add mobile charts expansion state
 
   // --- Search State & Refs for Main Header ---
   const [mainSearchTerm, setMainSearchTerm] = useState('');
-  const mainSearchInputRef = useRef<HTMLInputElement>(null); // Added ref for main search input
+  const mainSearchInputRef = useRef<HTMLInputElement>(null);
   // --- End Search State & Refs ---
 
   const timeIntervals = ['1m', '15m', '1h', '24h', '1w', '1mo', '1y', '5y', 'All'];
@@ -440,6 +499,43 @@ export const Header: React.FC = () => {
     };
   }, []);
   // --- End Search Effects ---
+
+  // Close mobile menu on resize to desktop
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 1024) { // lg breakpoint
+        setIsMobileMenuOpen(false);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Close mobile menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (isMobileMenuOpen) {
+        const target = event.target as HTMLElement;
+        const mobileMenu = document.querySelector('[data-mobile-menu]');
+        const hamburgerButton = document.querySelector('[data-hamburger-button]');
+        
+        if (mobileMenu && hamburgerButton && 
+            !mobileMenu.contains(target) && 
+            !hamburgerButton.contains(target)) {
+          setIsMobileMenuOpen(false);
+        }
+      }
+    };
+
+    if (isMobileMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isMobileMenuOpen]);
 
   // Fetch data for all charts on mount
   useEffect(() => {
@@ -527,6 +623,10 @@ export const Header: React.FC = () => {
     setIsLiveFeedExpanded(prev => !prev);
   };
 
+  const toggleMobileChartsExpansion = () => {
+    setIsMobileChartsExpanded(prev => !prev);
+  };
+
   const handleViewChange = (view: 'markets' | 'picks') => {
     setActiveView(view);
     setCurrentPage(1);
@@ -590,17 +690,32 @@ export const Header: React.FC = () => {
   return (
     <>
       <div id="main-header">
-        <div className="bg-slate-900 p-4 py-5 text-white">
+        {/* First Row - Mobile Responsive Header */}
+        <div className="bg-slate-900 p-4 py-5 text-white relative">
           <div className="container mx-auto flex justify-between items-center max-w-[77rem]">
-            <div className="flex items-center space-x-2">
-              <Link to="/">
-                <img src="/logoBAIMXFinal.png" alt="BAIMX Logo" className="h-16 w-auto" />
+            {/* Hamburger Menu - Visible on mobile (lg:hidden) */}
+            <div className="lg:hidden">
+              <button 
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} 
+                className="text-white p-2 hover:bg-slate-800 rounded transition-colors"
+                data-hamburger-button
+              >
+                {isMobileMenuOpen ? <XIcon size={24} /> : <MenuIcon size={24} />}
+              </button>
+            </div>
+
+            {/* Logo - Centered on mobile, left on desktop */}
+            <div className="flex-grow flex justify-center lg:flex-grow-0 lg:justify-start">
+              <Link to="/" className="cursor-default">
+                <img src="/logoBAIMXFinal.png" alt="BAIMX Logo" className="h-12 lg:h-16 w-auto mt-1" />
               </Link>
             </div>
-            <div className="flex items-center space-x-4">
+
+            {/* Desktop Navigation & Search - Hidden on mobile (hidden lg:flex) */}
+            <div className="hidden lg:flex items-center space-x-4">
               <motion.div layout className="flex items-center space-x-4">
                 <nav className="flex space-x-2.5 text-sm">
-                  <a href="#" className="hover:text-gray-300 relative pr-2.5"> 
+                  <a href="#" className="hover:text-gray-300 relative pr-2.5 cursor-default"> 
                     Live Wire
                     <motion.span
                       className="absolute top-0.5 right-0 block h-1.5 w-1.5 rounded-full bg-blue-500"
@@ -609,34 +724,34 @@ export const Header: React.FC = () => {
                       aria-hidden="true"
                     />
                   </a>
-                  <a href="#" className="hover:text-gray-300">Subscribe</a>
-                  <a href="#" className="hover:text-gray-300">Prices</a>
-                  <a href="#" className="hover:text-gray-300">Learn</a>
-                  <a href="#" className="hover:text-gray-300">Research</a>
-                  <a href="#" className="hover:text-gray-300">Licensing</a>
-                  <a href="#" className="hover:text-gray-300">Launchpad</a>
-                  <a href="#" className="hover:text-gray-300">API</a>
-                  <Link to="/about" className="hover:text-gray-300">About</Link>
-                  <a href="#" className="hover:text-gray-300">Contact</a>
+                  <a href="#" className="hover:text-gray-300 cursor-default">Subscribe</a>
+                  <a href="#" className="hover:text-gray-300 cursor-default">Prices</a>
+                  <a href="#" className="hover:text-gray-300 cursor-default">Learn</a>
+                  <a href="#" className="hover:text-gray-300 cursor-default">Research</a>
+                  <a href="#" className="hover:text-gray-300 cursor-default">Licensing</a>
+                  <a href="#" className="hover:text-gray-300 cursor-default">Launchpad</a>
+                  <a href="#" className="hover:text-gray-300 cursor-default">API</a>
+                  <Link to="/about" className="hover:text-gray-300 cursor-default">About</Link>
+                  <a href="#" className="hover:text-gray-300 cursor-default">Contact</a>
                 </nav>
               </motion.div>
               <motion.div layout className="flex items-center space-x-2">
-                {/* Static Search Input Field */}
-                <div className="relative flex items-center w-[220px]"> {/* Fixed width */}
+                {/* Desktop Search Input Field */}
+                <div className="relative flex items-center w-[220px]">
                   <input
-                    ref={mainSearchInputRef} // Added ref
+                    ref={mainSearchInputRef}
                     type="text"
                     value={mainSearchTerm}
                     onChange={(e) => setMainSearchTerm(e.target.value)}
                     placeholder="Search BAIMX"
-                    className="w-full h-8 px-3 pr-10 text-sm text-white bg-slate-800 border border-slate-700 rounded-md focus:ring-1 focus:ring-[#0091AD] focus:border-[#0091AD] outline-none placeholder-gray-400" // Increased pr-10 for shortcut
+                    className="w-full h-8 px-3 pr-10 text-sm text-white bg-slate-800 border border-slate-700 rounded-md focus:ring-1 focus:ring-[#0091AD] focus:border-[#0091AD] outline-none placeholder-gray-400"
                   />
-                  {!mainSearchTerm && ( // Show shortcut only when search is empty
+                  {!mainSearchTerm && (
                     <div className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-500 bg-slate-700 px-2 py-0.5 rounded-sm pointer-events-none">
                       /
                     </div>
                   )}
-                  {mainSearchTerm && ( // Show X button only if there is text
+                  {mainSearchTerm && (
                     <motion.button
                       onClick={() => setMainSearchTerm('')}
                       className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white p-0.5"
@@ -650,55 +765,150 @@ export const Header: React.FC = () => {
                   )}
                 </div>
                 <button 
-                  className="bg-[#0091AD] text-white px-4 py-2 rounded font-medium text-xs whitespace-nowrap"
+                  className="bg-[#0091AD] text-white px-4 py-2 rounded font-medium text-xs whitespace-nowrap cursor-default"
                   onClick={() => setIsSignUpModalOpen(true)}
                 >
                   Sign In
                 </button>
               </motion.div>
             </div>
+            
+            {/* Sign In Button - Visible on mobile */}
+            <div className="lg:hidden">
+              <button 
+                className="bg-[#0091AD] text-white px-3 py-2 rounded font-medium text-xs cursor-default"
+                onClick={() => setIsSignUpModalOpen(true)}
+              >
+                Sign In
+              </button>
+            </div>
           </div>
+
+          {/* Mobile Menu Overlay / Drawer */}
+          <AnimatePresence>
+            {isMobileMenuOpen && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+                className="lg:hidden bg-slate-800 absolute top-full left-0 right-0 shadow-lg overflow-hidden z-[1000]"
+                data-mobile-menu
+              >
+                <div className="container mx-auto max-w-[77rem] px-4">
+                  {/* Mobile Navigation */}
+                  <nav className="flex flex-col py-4 space-y-3 border-b border-slate-700">
+                    <a href="#" className="hover:text-gray-300 text-white text-center py-2 cursor-default">Live Wire</a>
+                    <a href="#" className="hover:text-gray-300 text-white text-center py-2 cursor-default">Subscribe</a>
+                    <a href="#" className="hover:text-gray-300 text-white text-center py-2 cursor-default">Prices</a>
+                    <a href="#" className="hover:text-gray-300 text-white text-center py-2 cursor-default">Learn</a>
+                    <a href="#" className="hover:text-gray-300 text-white text-center py-2 cursor-default">Research</a>
+                    <a href="#" className="hover:text-gray-300 text-white text-center py-2 cursor-default">Licensing</a>
+                    <a href="#" className="hover:text-gray-300 text-white text-center py-2 cursor-default">Launchpad</a>
+                    <a href="#" className="hover:text-gray-300 text-white text-center py-2 cursor-default">API</a>
+                    <Link to="/about" className="hover:text-gray-300 text-white text-center py-2 cursor-default">About</Link>
+                    <a href="#" className="hover:text-gray-300 text-white text-center py-2 cursor-default">Contact</a>
+                  </nav>
+                  
+                  {/* Mobile Category Navigation */}
+                  <nav className="flex flex-wrap justify-center gap-3 py-4 text-sm text-gray-100">
+                    <a href="#" className="hover:text-white cursor-default">General</a>
+                    <a href="#" className="hover:text-white cursor-default">BTC</a>
+                    <a href="#" className="hover:text-white cursor-default">ETH</a>
+                    <a href="#" className="hover:text-white cursor-default">USDT</a>
+                    <a href="#" className="hover:text-white cursor-default">XRP</a>
+                    <a href="#" className="hover:text-white cursor-default">SOL</a>
+                    <a href="#" className="hover:text-white cursor-default">AVAX</a>
+                    <a href="#" className="hover:text-white cursor-default">DOGE</a>
+                    <a href="#" className="hover:text-white cursor-default">LTC</a>
+                    <a href="#" className="hover:text-white cursor-default">BCH</a>
+                    <a href="#" className="hover:text-white cursor-default">Speculative</a>
+                    <a href="#" className="hover:text-white cursor-default">Reports</a>
+                    <a href="#" className="hover:text-white cursor-default">Stables</a>
+                    <a href="#" className="hover:text-white relative cursor-default">
+                      Calendar
+                      <span className="absolute -top-2.5 -right-4.5 px-1 text-[9px] font-medium bg-[#0091AD] text-black rounded-sm">New</span>
+                    </a>
+                    <a href="#" className="hover:text-white cursor-default">Governance</a>
+                    <a href="#" className="hover:text-white cursor-default">Infrastructure</a>
+                  </nav>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
-        {/* Second Row - Navigation */}
-        <div className="bg-slate-900 p-4 py-3 border-b border-gray-800 border-t">
-          <div className="container mx-auto max-w-[77rem] flex justify-center">
-            <nav className="flex justify-center space-x-4 text-sm font-medium text-gray-100">
-                 {/* Repeating nav items for demo */}
-                 <a href="#" className="hover:text-white">General</a>
-                <a href="#" className="hover:text-white">BTC</a>
-                <a href="#" className="hover:text-white">ETH</a>
-                <a href="#" className="hover:text-white">USDT</a>
-                <a href="#" className="hover:text-white">XRP</a>
-                <a href="#" className="hover:text-white">SOL</a>
-                <a href="#" className="hover:text-white">AVAX</a>
-                <a href="#" className="hover:text-white">DOGE</a>
-                <a href="#" className="hover:text-white">LTC</a>
-                <a href="#" className="hover:text-white">BCH</a>
-                <a href="#" className="hover:text-white">Speculative</a>
-                <a href="#" className="hover:text-white">Reports</a>
-                <a href="#" className="hover:text-white">Stables</a>
-                <a href="#" className="hover:text-white relative">
+        {/* Second Row - Search Bar (Mobile) / Navigation (Desktop) */}
+        <div className="bg-slate-900 border-b border-gray-800 border-t">
+          {/* Mobile Search Bar */}
+          <div className="lg:hidden p-4 py-3">
+            <div className="container mx-auto max-w-[77rem]">
+              <div className="relative flex items-center">
+                <input
+                  type="text"
+                  value={mainSearchTerm}
+                  onChange={(e) => setMainSearchTerm(e.target.value)}
+                  placeholder="Search BAIMX"
+                  className="w-full h-10 px-4 pr-12 text-sm text-white bg-slate-800 border border-slate-700 rounded-md focus:ring-1 focus:ring-[#0091AD] focus:border-[#0091AD] outline-none placeholder-gray-400"
+                />
+                {!mainSearchTerm && (
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-500 bg-slate-700 px-2 py-0.5 rounded-sm pointer-events-none">
+                    /
+                  </div>
+                )}
+                {mainSearchTerm && (
+                  <motion.button
+                    onClick={() => setMainSearchTerm('')}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white p-0.5"
+                    aria-label="Clear search"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                  >
+                    <XIcon size={16} />
+                  </motion.button>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Desktop Navigation */}
+          <div className="hidden lg:block p-4 py-3">
+            <div className="container mx-auto max-w-[77rem] flex justify-center">
+              <nav className="flex justify-center space-x-5 text-sm text-gray-100">
+                <a href="#" className="hover:text-white cursor-default">General</a>
+                <a href="#" className="hover:text-white cursor-default">BTC</a>
+                <a href="#" className="hover:text-white cursor-default">ETH</a>
+                <a href="#" className="hover:text-white cursor-default">USDT</a>
+                <a href="#" className="hover:text-white cursor-default">XRP</a>
+                <a href="#" className="hover:text-white cursor-default">SOL</a>
+                <a href="#" className="hover:text-white cursor-default">AVAX</a>
+                <a href="#" className="hover:text-white cursor-default">DOGE</a>
+                <a href="#" className="hover:text-white cursor-default">LTC</a>
+                <a href="#" className="hover:text-white cursor-default">BCH</a>
+                <a href="#" className="hover:text-white cursor-default">Speculative</a>
+                <a href="#" className="hover:text-white cursor-default">Reports</a>
+                <a href="#" className="hover:text-white cursor-default">Stables</a>
+                <a href="#" className="hover:text-white relative cursor-default">
                   Calendar
-                  <span className="absolute -top-2.5 -right-4.5 px-1  text-[9px] font-medium bg-[#0091AD] text-black rounded-sm">New</span>
+                  <span className="absolute -top-2.5 -right-4.5 px-1 text-[9px] font-medium bg-[#0091AD] text-black rounded-sm">New</span>
                 </a>
-                <a href="#" className="hover:text-white">Governance</a>
-                <a href="#" className="hover:text-white">Infrastructure</a>
-            </nav>
+                <a href="#" className="hover:text-white cursor-default">Governance</a>
+                <a href="#" className="hover:text-white cursor-default">Infrastructure</a>
+              </nav>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Third Row - Today's Picks - Now Animates Height */} 
+      {/* Third Row - Today's Picks - Mobile Optimized Charts */} 
       <motion.div 
         className="bg-slate-950/95 overflow-hidden"
         initial={false}
-        animate={{ height: isPicksExpanded ? 'auto' : '50px' }}
+        animate={{ height: 'auto' }} // Always auto height since we're not collapsing this container
         transition={{ type: "spring", duration: 0.4, bounce: 0.1 }}
       >
-        <div className="container mx-auto max-w-[77rem] relative py-5 pb-6">
-         
-
+        <div className="container mx-auto max-w-[77rem] relative py-4 pb-0">
           {/* Loader */}
           {isInitiallyLoading && (
             <div className="absolute inset-0 flex items-center justify-center mt-4 z-10 bg-opacity-100">
@@ -706,225 +916,428 @@ export const Header: React.FC = () => {
             </div>
           )}
 
-          {isPicksExpanded && (
-            <div className="flex gap-2 items-center mb-1">
+          {/* Live Markets/Today's Picks Header - Always Visible */}
+          <div className="flex justify-between items-center mb-1 px-4 lg:px-0">
+            <div className="flex gap-2 items-center">
               <button 
                 onClick={() => handleViewChange('markets')}
-                className={`text-sm font-medium mb-1 ${activeView === 'markets' ? 'text-white' : 'text-gray-400 hover:text-gray-300'}`}
+                className={`text-sm font-medium ${activeView === 'markets' ? 'text-white' : 'text-gray-400 hover:text-gray-300'}`}
               >
                 Live Markets
               </button>
-              <div className="h-4 w-px mb-1 bg-gray-600"></div>
+              <div className="h-4 w-px bg-gray-600"></div>
               <button 
                 onClick={() => handleViewChange('picks')}
-                className={`text-sm font-medium mb-1 ${activeView === 'picks' ? 'text-white' : 'text-gray-400 hover:text-gray-300'}`}
+                className={`text-sm font-medium ${activeView === 'picks' ? 'text-white' : 'text-gray-400 hover:text-gray-300'}`}
               >
                 Today's Picks
               </button>
+              
+              {/* Compress/Expand Button - Right after the text */}
+              <AnimatePresence mode="wait">
+                {isPicksExpanded ? (
+                  <motion.button 
+                    key="compress"
+                    onClick={togglePicksExpansion} 
+                    className="p-1 rounded transition-colors text-gray-300 hover:bg-slate-700 bg-slate-800 ml-2"
+                    aria-label="Collapse Today's Picks"
+                    initial={{ opacity: 0, scale: 0.8, rotate: 180 }}
+                    animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                    exit={{ opacity: 0, scale: 0.8, rotate: -180 }}
+                    transition={{ duration: 0.3, ease: "easeInOut" }}
+                  >
+                    <ChevronUp size={16} />
+                  </motion.button>
+                ) : (
+                  <motion.button 
+                    key="expand"
+                    onClick={togglePicksExpansion} 
+                    className="p-1 rounded transition-colors text-gray-300 hover:bg-slate-700 bg-slate-800 ml-2"
+                    aria-label="Expand Today's Picks"
+                    initial={{ opacity: 0, scale: 0.8, rotate: -180 }}
+                    animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                    exit={{ opacity: 0, scale: 0.8, rotate: 180 }}
+                    transition={{ duration: 0.3, ease: "easeInOut" }}
+                  >
+                    <ChevronDown size={16} />
+                  </motion.button>
+                )}
+              </AnimatePresence>
             </div>
-          )}
+            
+            {/* View Prices Button - Now standalone on the right */}
+            <button className="hidden lg:flex items-center text-xs text-gray-400 hover:text-gray-200 transition-colors font-medium">
+              View Prices
+              <ChevronRight size={14} className="ml-0.5" />
+            </button>
+          </div>
           
-          {/* NEW: Time Interval Selector Row (with View Prices) */}
-          {isPicksExpanded && activeView === 'markets' && (
-            <div className="flex justify-between items-center mb-0 "> {/* Parent flex container */}
-              {/* Time Interval Selector */}
-              <div className="flex space-x-0"> 
-                {timeIntervals.map(interval => (
+          {/* Collapsible Content Area */}
+          <motion.div
+            initial={false}
+            animate={{ 
+              height: isPicksExpanded ? 'auto' : 0,
+              opacity: isPicksExpanded ? 1 : 0
+            }}
+            transition={{ 
+              height: { type: "spring", duration: 0.4, bounce: 0.1 },
+              opacity: { duration: 0.2, delay: isPicksExpanded ? 0.1 : 0 }
+            }}
+            className="overflow-hidden"
+          >
+            {/* Time Interval Selector Row with Controls - Mobile Optimized */}
+            {activeView === 'markets' && (
+              <div className="flex justify-between items-center mb-0 px-4 lg:px-0">
+                <div className="flex items-center gap-2">
+                  {/* Time Interval Selector - Horizontal scroll on mobile */}
+                  <div className="flex space-x-0 overflow-x-auto lg:overflow-x-visible scrollbar-none">
+                    {timeIntervals.map(interval => (
+                      <button 
+                        key={interval}
+                        onClick={() => setSelectedInterval(interval)}
+                        className={`px-1.5 py-1 text-xs font-medium rounded transition-colors whitespace-nowrap flex-shrink-0
+                          ${selectedInterval === interval 
+                            ? 'text-white' 
+                            : 'text-gray-400 hover:bg-slate-700/80 hover:text-gray-200'}
+                        `}
+                      >
+                        {interval}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Mobile Charts Expand Button - Only visible on mobile */}
                   <button 
-                    key={interval}
-                    onClick={() => setSelectedInterval(interval)}
-                    className={`px-1.5 py-1 text-xs font-medium rounded transition-colors 
-                      ${selectedInterval === interval 
-                        ? 'text-white' // Keep active style simple
-                        : 'text-gray-400 hover:bg-slate-700/80 hover:text-gray-200'}
-                    `}
+                    onClick={toggleMobileChartsExpansion}
+                    className="lg:hidden p-1 rounded transition-colors text-gray-300 hover:bg-slate-700 bg-slate-800 ml-2"
+                    aria-label={isMobileChartsExpanded ? "Collapse Mobile Charts" : "Expand Mobile Charts"}
                   >
-                    {interval} {/* Use lowercase as per user edit */}
+                    {isMobileChartsExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                   </button>
-                ))}
+                </div>
+
+                {/* Page Controls - Moved here and aligned right */}
+                {!isInitiallyLoading && (
+                  <div className="hidden lg:flex items-center space-x-1">
+                    <button 
+                      onClick={handlePrevPage}
+                      disabled={currentPage === 1}
+                      className={`p-1 rounded transition-colors 
+                        ${currentPage === 1 
+                          ? 'text-gray-600 cursor-not-allowed bg-slate-800'
+                          : 'text-gray-300 hover:bg-slate-700 bg-slate-800'}
+                      `}
+                      aria-label="Previous Page"
+                    >
+                      <ChevronLeft size={16} />
+                    </button>
+                    <span className="text-xs text-gray-400 px-2">
+                      Page {currentPage}
+                    </span>
+                    <button 
+                      onClick={handleNextPage}
+                      className="p-1 rounded transition-colors text-gray-300 hover:bg-slate-700 bg-slate-800"
+                      aria-label="Next Page"
+                    >
+                      <ChevronRight size={16} />
+                    </button>
+                  </div>
+                )}
               </div>
+            )}
 
-              {/* View Prices Button */}
-              <button className="flex items-center text-xs text-gray-400 hover:text-gray-200 transition-colors font-medium">
-                View Prices
-                <ChevronRight size={14} className="ml-0.5" />
-              </button>
-            </div>
-          )}
-
-          {/* AnimatePresence for the content switching */}
-          <AnimatePresence>
-            {isPicksExpanded && (
-              <motion.div
-                key={activeView}
-                initial={{ 
-                  x: activeView === 'markets' ? -100 : 100,
-                  opacity: 0,
-                  scale: 0.95
-                }}
-                animate={{ 
-                  x: 0,
-                  opacity: 1,
-                  scale: 1
-                }}
-                exit={{ 
-                  x: activeView === 'markets' ? 100 : -100,
-                  opacity: 0,
-                  scale: 0.95
-                }}
-                transition={{ 
-                  type: "spring",
-                  duration: 0.5,
-                  bounce: 0.1,
-                  opacity: { duration: 0.3 },
-                  scale: { duration: 0.3 }
-                }}
-                className="relative"
-              >
-                {activeView === 'markets' ? (
-                  // Markets View
-                  <motion.div
-                    className="relative"
-                  >
-                    <div className="grid grid-cols-6 gap-1">
-                      {isInitiallyLoading ? (
-                        <div className="col-span-6 py-8 flex justify-center">
-                           {/* Optionally show a simpler loading state here if preferred */}
-                        </div>
-                      ) : (
-                        <>
-                          {/* Filter coins based on pagination - Example logic */}
-                          {/* Replace with actual pagination logic when API supports it */}
-                          {coins.slice((currentPage - 1) * 6, currentPage * 6).map((coin, index) => {
-                            const data = chartData[coin.symbol];
-                            const error = chartErrors[coin.symbol];
-                            const hasData = data && !error;
-                            const hasError = error && !data;
-                            
-                            return (
-                              <motion.div 
-                                key={coin.symbol}
-                                initial={{ opacity: 0, y: 20, scale: 0.95 }}
-                                animate={{ opacity: 1, y: 0, scale: 1 }}
-                                transition={{ 
-                                  duration: 0.5, 
-                                  delay: index * 0.08,
-                                  ease: [0.2, 0.65, 0.3, 0.9]
-                                }}
-                                className="bg-[#14151F] border border-gray-800 rounded flex flex-col h-[140px] shadow-lg mb-5 mt-2"
-                              >
-                                {hasData && (
-                                  <motion.div 
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    transition={{ delay: index * 0.08 + 0.2, duration: 0.4 }}
-                                    className="flex-grow"
-                                  >
-                                    <MiniTokenChart 
-                                      symbol={coin.symbol} 
-                                      chartOption={data?.option || null} 
-                                      error={error || null} 
-                                      percentageChange={data?.percentageChange || null}
-                                      volume24h={data?.volume24h}
-                                      price={data?.price}
-                                    />
-                                  </motion.div>
-                                )}
-                                {hasError && (
-                                  <div className="h-16 flex items-center justify-center text-xs text-red-500">
-                                    {error.includes('pool') ? 'No pool found' : 'Failed to load'}
-                                  </div>
-                                )}
-                              </motion.div>
-                            );
-                          })}
-                        </>
-                      )}
-                    </div>
-
-                    {/* NEW: Pagination Controls - Only shown in markets view when expanded */}
-                    {!isInitiallyLoading && (
-                      <div className="flex justify-between items-center mt-0 space-x-1"> {/* Changed to justify-between */}
-                        {/* Compress Button - Moved here and restyled */}
-                        {isPicksExpanded && (
-                          <button 
-                            onClick={togglePicksExpansion} 
-                            className={`p-1 rounded transition-colors text-gray-300 hover:bg-slate-700 bg-slate-800`}
-                            aria-label="Collapse Today's Picks"
-                          >
-                            <ChevronUp size={16} />
-                          </button>
+            {/* AnimatePresence for the content switching */}
+            <AnimatePresence>
+              {(
+                <motion.div
+                  key={activeView}
+                  initial={{ 
+                    x: activeView === 'markets' ? -100 : 100,
+                    opacity: 0,
+                    scale: 0.95
+                  }}
+                  animate={{ 
+                    x: 0,
+                    opacity: 1,
+                    scale: 1
+                  }}
+                  exit={{ 
+                    x: activeView === 'markets' ? 100 : -100,
+                    opacity: 0,
+                    scale: 0.95
+                  }}
+                  transition={{ 
+                    type: "spring",
+                    duration: 0.5,
+                    bounce: 0.1,
+                    opacity: { duration: 0.3 },
+                    scale: { duration: 0.3 }
+                  }}
+                  className="relative"
+                >
+                  {activeView === 'markets' ? (
+                    // Markets View - Mobile Optimized
+                    <motion.div className="relative">
+                      {/* Desktop Grid - Only show when expanded */}
+                      <div className="hidden lg:grid lg:grid-cols-6 gap-1">
+                        {isInitiallyLoading ? (
+                          <div className="col-span-6 py-8 flex justify-center">
+                          </div>
+                        ) : (
+                          <>
+                            {coins.slice((currentPage - 1) * 6, currentPage * 6).map((coin, index) => {
+                              const data = chartData[coin.symbol];
+                              const error = chartErrors[coin.symbol];
+                              const hasData = data && !error;
+                              const hasError = error && !data;
+                              
+                              return (
+                                <motion.div 
+                                  key={coin.symbol}
+                                  initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                                  transition={{ 
+                                    duration: 0.5, 
+                                    delay: index * 0.08,
+                                    ease: [0.2, 0.65, 0.3, 0.9]
+                                  }}
+                                  className="bg-[#14151F] border border-gray-800 rounded flex flex-col h-[140px] shadow-lg mb-5 mt-2"
+                                >
+                                  {hasData && (
+                                    <motion.div 
+                                      initial={{ opacity: 0 }}
+                                      animate={{ opacity: 1 }}
+                                      transition={{ delay: index * 0.08 + 0.2, duration: 0.4 }}
+                                      className="flex-grow"
+                                    >
+                                      <MiniTokenChart 
+                                        symbol={coin.symbol} 
+                                        chartOption={data?.option || null} 
+                                        error={error || null} 
+                                        percentageChange={data?.percentageChange || null}
+                                        volume24h={data?.volume24h}
+                                        price={data?.price}
+                                      />
+                                    </motion.div>
+                                  )}
+                                  {hasError && (
+                                    <div className="h-16 flex items-center justify-center text-xs text-red-500">
+                                      {error.includes('pool') ? 'No pool found' : 'Failed to load'}
+                                    </div>
+                                  )}
+                                </motion.div>
+                              );
+                            })}
+                          </>
                         )}
-                        {/* Spacer to push pagination to the right if compress button is not there - or adjust flex properties */} 
-                        {isPicksExpanded ? <div className="flex-grow"></div> : null } 
+                      </div>
 
-                        <div className="flex items-center space-x-1"> {/* Group for pagination */} 
-                          <button 
-                            onClick={handlePrevPage}
-                            disabled={currentPage === 1}
-                            className={`p-1 rounded transition-colors 
-                              ${currentPage === 1 
-                                ? 'text-gray-600 cursor-not-allowed bg-slate-800'
-                                : 'text-gray-300 hover:bg-slate-700 bg-slate-800'}
-                            `}
-                            aria-label="Previous Page"
-                          >
-                            <ChevronLeft size={16} />
-                          </button>
-                          <span className="text-xs text-gray-400 px-2">
-                            Page {currentPage}
-                          </span>
-                          <button 
-                            onClick={handleNextPage}
-                            // disabled={currentPage >= totalPages} // Add this logic later
-                            className="p-1 rounded transition-colors text-gray-300 hover:bg-slate-700 bg-slate-800"
-                            aria-label="Next Page"
-                          >
-                            <ChevronRight size={16} />
-                          </button>
+                      {/* Universal Horizontal Scroll - Shows on mobile always, and on desktop when expanded */}
+                      <div className="lg:hidden">
+                        <div className="overflow-x-auto scrollbar-none px-4">
+                          {!isMobileChartsExpanded ? (
+                            // Collapsed view - Ticker style
+                            <div className="flex space-x-2 pb-1">
+                              {isInitiallyLoading ? (
+                                <div className="flex justify-center w-full py-8">
+                                  <LoadingCubes />
+                                </div>
+                              ) : (
+                                <>
+                                  {coins.map((coin, index) => {
+                                    const data = chartData[coin.symbol];
+                                    const error = chartErrors[coin.symbol];
+                                    const hasData = data && !error;
+                                    
+                                    if (hasData && data) {
+                                      return (
+                                        <MobileTickerItem
+                                          key={coin.symbol}
+                                          symbol={coin.symbol}
+                                          price={data.price || INITIAL_PRICES[coin.symbol]?.price || 0}
+                                          percentageChange={data.percentageChange || 0}
+                                          index={index}
+                                        />
+                                      );
+                                    }
+                                    
+                                    // Fallback for loading/error states
+                                    return (
+                                      <motion.div
+                                        key={coin.symbol}
+                                        initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                                        transition={{ 
+                                          duration: 0.5, 
+                                          delay: index * 0.08,
+                                          ease: [0.2, 0.65, 0.3, 0.9]
+                                        }}
+                                        className="inline-flex items-center mx-1 px-2 flex-shrink-0 bg-gray-900 rounded-md border border-gray-700 py-1 px-2 cursor-default"
+                                        style={{
+                                          transition: 'font-size 0.2s ease-in-out',
+                                        }}
+                                      >
+                                        <span className="font-medium mr-1.5 text-gray-100 text-xs">
+                                          {coin.symbol.toUpperCase()}
+                                        </span>
+                                        <span className="text-gray-400 text-xs">
+                                          {error ? 'Error' : 'Loading...'}
+                                        </span>
+                                      </motion.div>
+                                    );
+                                  })}
+                                </>
+                              )}
+                            </div>
+                          ) : (
+                            // Expanded view - Full charts
+                            <div className="flex space-x-3 pb-4">
+                              {isInitiallyLoading ? (
+                                <div className="flex justify-center w-full py-8">
+                                  <LoadingCubes />
+                                </div>
+                              ) : (
+                                <>
+                                  {coins.map((coin, index) => {
+                                    const data = chartData[coin.symbol];
+                                    const error = chartErrors[coin.symbol];
+                                    const hasData = data && !error;
+                                    const hasError = error && !data;
+                                    
+                                    return (
+                                      <motion.div 
+                                        key={coin.symbol}
+                                        initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                                        transition={{ 
+                                          duration: 0.5, 
+                                          delay: index * 0.08,
+                                          ease: [0.2, 0.65, 0.3, 0.9]
+                                        }}
+                                        className="bg-[#14151F] border border-gray-800 rounded flex flex-col h-[140px] w-[200px] flex-shrink-0 shadow-lg mt-2"
+                                      >
+                                        {hasData && (
+                                          <motion.div 
+                                            initial={{ opacity: 0 }}
+                                            animate={{ opacity: 1 }}
+                                            transition={{ delay: index * 0.08 + 0.2, duration: 0.4 }}
+                                            className="flex-grow"
+                                          >
+                                            <MiniTokenChart 
+                                              symbol={coin.symbol} 
+                                              chartOption={data?.option || null} 
+                                              error={error || null} 
+                                              percentageChange={data?.percentageChange || null}
+                                              volume24h={data?.volume24h}
+                                              price={data?.price}
+                                            />
+                                          </motion.div>
+                                        )}
+                                        {hasError && (
+                                          <div className="h-16 flex items-center justify-center text-xs text-red-500">
+                                            {error.includes('pool') ? 'No pool found' : 'Failed to load'}
+                                          </div>
+                                        )}
+                                      </motion.div>
+                                    );
+                                  })}
+                                </>
+                              )}
+                            </div>
+                          )}
                         </div>
                       </div>
-                    )}
-                  </motion.div>
+                    </motion.div>
+                  ) : (
+                    // Today's Picks View
+                    <motion.div
+                      className="grid grid-cols-6 gap-2 relative px-4 lg:px-0"
+                      style={{ minHeight: '80px' }}
+                    >
+                      <div className="col-span-6 py-8 flex justify-center text-gray-400">
+                        Today's Picks View Coming Soon
+                      </div>
+                    </motion.div>
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
+          
+          {/* Compressed Ticker View - Shows when collapsed */}
+          {!isPicksExpanded && activeView === 'markets' && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.3, ease: "easeInOut" }}
+              className="overflow-x-auto scrollbar-none px-4 py-2"
+            >
+              <div className="flex space-x-2">
+                {isInitiallyLoading ? (
+                  <div className="flex justify-center w-full py-4">
+                    <LoadingCubes />
+                  </div>
                 ) : (
-                  // Today's Picks View
-                  <motion.div
-                    className="grid grid-cols-6 gap-2 relative"
-                    style={{ minHeight: '80px' }}
-                  >
-                    <div className="col-span-6 py-8 flex justify-center text-gray-400">
-                      Today's Picks View Coming Soon
-                    </div>
-                  </motion.div>
+                  <>
+                    {coins.map((coin, index) => {
+                      const data = chartData[coin.symbol];
+                      const error = chartErrors[coin.symbol];
+                      const hasData = data && !error;
+                      
+                      if (hasData && data) {
+                        return (
+                          <MobileTickerItem
+                            key={coin.symbol}
+                            symbol={coin.symbol}
+                            price={data.price || INITIAL_PRICES[coin.symbol]?.price || 0}
+                            percentageChange={data.percentageChange || 0}
+                            index={index}
+                          />
+                        );
+                      }
+                      
+                      // Fallback for loading/error states
+                      return (
+                        <motion.div
+                          key={coin.symbol}
+                          initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          transition={{ 
+                            duration: 0.5, 
+                            delay: index * 0.08,
+                            ease: [0.2, 0.65, 0.3, 0.9]
+                          }}
+                          className="inline-flex items-center mx-1 px-2 flex-shrink-0 bg-gray-900 rounded-md border border-gray-700 py-1 px-2 cursor-default"
+                          style={{
+                            transition: 'font-size 0.2s ease-in-out',
+                          }}
+                        >
+                          <span className="font-medium mr-1.5 text-gray-100 text-xs">
+                            {coin.symbol.toUpperCase()}
+                          </span>
+                          <span className="text-gray-400 text-xs">
+                            {error ? 'Error' : 'Loading...'}
+                          </span>
+                        </motion.div>
+                      );
+                    })}
+                  </>
                 )}
-              </motion.div>
-            )}
-          </AnimatePresence>
+              </div>
+            </motion.div>
+          )}
         </div>
       </motion.div>
 
-      {/* Expand Button - Positioned below the third row */}
-      {!isPicksExpanded && (
-        <motion.button 
-          onClick={togglePicksExpansion} 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.4 }}
-          className="absolute left-0 mt-4 p-1.5 bg-[#1C1D33] rounded-sm text-white hover:bg-[#1C1D33]/90 transition-colors"
-          aria-label="Expand Today's Picks"
-        >
-          <ChevronDown size={16} />
-        </motion.button>
-      )}
-
-      {/* Fourth Row - Live Feed with simplified structure */}
+      {/* Fourth Row - Live Feed - Mobile Optimized */}
       <motion.div 
-        className="bg-slate-900 border-t border-b border-gray-800 overflow-hidden"
+        className="bg-slate-900 border-t border-b border-gray-800 overflow-hidden "
         initial={false}
-        animate={{ height: isLiveFeedExpanded ? '260px' : '205px' }}
+        animate={{ height: isLiveFeedExpanded ? '230px' : '160px' }}
         transition={{ type: "spring", duration: 0.4, bounce: 0.1 }}
       >
-        <div className="container mx-auto max-w-[77rem] relative py-4 pb-5">
+        <div className="container mx-auto max-w-[77rem] relative pt-4 pb-5 px-4 lg:px-0">
           {/* Live Feed Header */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -936,27 +1349,36 @@ export const Header: React.FC = () => {
               <button className="p-1 text-gray-400 hover:text-gray-200 transition-colors">
                 <Filter size={13} />
               </button>
+              
+              {/* Expand Button for Live Feed - Moved here next to Live Wire text */}
+              {!isLiveFeedExpanded && (
+                <button 
+                  onClick={toggleLiveFeedExpansion} 
+                  className="p-1 rounded transition-colors text-gray-300 hover:bg-slate-700 bg-slate-800"
+                  aria-label="Expand Live Feed"
+                >
+                  <ChevronDown size={16} />
+                </button>
+              )}
             </div>
             
-            {/* Open in CTerminal Button */}
-            <button className="flex items-center text-xs text-gray-400 hover:text-gray-200 transition-colors font-medium">
+            {/* Open in CTerminal Button - Hidden on mobile */}
+            <button className="hidden lg:flex items-center text-xs text-gray-400 hover:text-gray-200 transition-colors font-medium">
               Open in CTerminal
               <ChevronRight size={14} className="ml-0.5" />
             </button>
           </div>
           
-          {/* NEW Styled Container - Live Wire Feed */}
+          {/* Live Wire Feed Container - Mobile Optimized */}
           <div className="mt-2">
-            <div 
-              className="max-w-[77rem] mx-auto bg-slate-950/30 rounded-md border border-gray-800 overflow-hidden"
-            >
+            <div className="max-w-[77rem] mx-auto bg-slate-950/30 rounded-md border border-gray-800 overflow-hidden">
               <div 
                 ref={liveWireContainerRef}
                 onScroll={handleScroll}
-                className="overflow-y-auto scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent pt-3 pl-2"
+                className="overflow-y-auto scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent pt-0 md:pt-2 pl-2"
                 style={{ 
                   scrollbarWidth: 'thin',
-                  height: isLiveFeedExpanded ? '180px' : '100px'
+                  height: isLiveFeedExpanded ? '150px' : '78px'
                 }}
               >
                 <AnimatePresence initial={false}>
@@ -967,74 +1389,115 @@ export const Header: React.FC = () => {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0 }}
                       transition={{ duration: 0.4 }}
-                      className={`flex items-center px-4 py-1 group ${
+                      className={`flex flex-col lg:flex-row lg:items-center px-2 lg:px-4 py-2 lg:py-1 group ${
                         index === 0 
                           ? 'text-gray-200 text-sm' 
                           : 'text-xs text-gray-400 hover:text-white'
-                      } transition-colors duration-200 cursor-default`}
+                      } transition-colors duration-200 cursor-default border-b border-gray-800 lg:border-b-0`}
                       style={{
-                        marginBottom: index !== liveWireData.length - 1 ? '2px' : '0',
+                        marginBottom: index !== liveWireData.length - 1 ? '0px' : '0',
                       }}
                     >
-                      {/* Time */}
-                      <div className={`w-16 text-xs font-medium ${
-                        index === 0 
-                          ? 'text-gray-400' 
-                          : 'text-gray-400 group-hover:text-gray-300 transition-colors duration-200'
-                      }`}>
-                        {item.timestamp}
-                      </div>
-                      
-                      {/* Content */}
-                      <div className={`flex-1 font-medium truncate pl-8 ${
-                        index === 0 
-                          ? 'text-gray-200' 
-                          : 'text-gray-500 group-hover:text-white transition-colors duration-200'
-                      }`}>
-                        {item.content}
-                      </div>
-                      
-                      {/* Related Tokens */}
-                      <div className="flex gap-2 items-center">
-                        {item.relatedTokens.map((token, idx) => (
-                          <div 
-                            key={idx}
-                            className={`flex items-center ${index === 0 ? 'text-xs' : 'text-[10px]'} font-medium rounded px-2 py-0.5 
-                              ${token.direction === 'positive' 
-                                ? 'text-green-500' 
-                                : token.direction === 'negative' 
-                                  ? 'text-red-500' 
-                                  : index === 0 
-                                    ? 'text-gray-300'
-                                    : 'text-gray-300 group-hover:text-gray-100 transition-colors duration-200'}`}
-                          >
-                            {/* Token Symbol */}
-                            <span className="mr-1">
-                              {token.direction === 'positive' ? '+' : 
-                               token.direction === 'negative' ? '-' : ''}
-                            </span>
-                            {token.symbol}
+                      {/* Mobile Layout */}
+                      <div className="lg:hidden">
+                        <div className="flex items-center justify-between mb-1">
+                          <div className={`text-xs font-medium ${
+                            index === 0 
+                              ? 'text-gray-400' 
+                              : 'text-gray-400 group-hover:text-gray-300 transition-colors duration-200'
+                          }`}>
+                            {item.timestamp}
                           </div>
-                        ))}
+                          <div className="flex gap-1 items-center">
+                            {item.relatedTokens.map((token, idx) => (
+                              <div 
+                                key={idx}
+                                className={`flex items-center text-[10px] font-medium rounded px-1 py-0.5 
+                                  ${token.direction === 'positive' 
+                                    ? 'text-green-500' 
+                                    : token.direction === 'negative' 
+                                      ? 'text-red-500' 
+                                      : 'text-gray-300'}`}
+                              >
+                                <span className="mr-0.5">
+                                  {token.direction === 'positive' ? '+' : 
+                                   token.direction === 'negative' ? '-' : ''}
+                                </span>
+                                {token.symbol}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                        <div className={`font-medium ${
+                          index === 0 
+                            ? 'text-gray-200' 
+                            : 'text-gray-500 group-hover:text-white transition-colors duration-200'
+                        }`}>
+                          {item.content}
+                        </div>
+                      </div>
+
+                      {/* Desktop Layout */}
+                      <div className="hidden lg:flex lg:items-center lg:w-full">
+                        {/* Time */}
+                        <div className={`w-16 text-xs font-medium ${
+                          index === 0 
+                            ? 'text-gray-400' 
+                            : 'text-gray-400 group-hover:text-gray-300 transition-colors duration-200'
+                        }`}>
+                          {item.timestamp}
+                        </div>
+                        
+                        {/* Content */}
+                        <div className={`flex-1 font-medium truncate pl-8 ${
+                          index === 0 
+                            ? 'text-gray-200' 
+                            : 'text-gray-500 group-hover:text-white transition-colors duration-200'
+                        }`}>
+                          {item.content}
+                        </div>
+                        
+                        {/* Related Tokens */}
+                        <div className="flex gap-2 items-center">
+                          {item.relatedTokens.map((token, idx) => (
+                            <div 
+                              key={idx}
+                              className={`flex items-center ${index === 0 ? 'text-xs' : 'text-[10px]'} font-medium rounded px-2 py-0.5 
+                                ${token.direction === 'positive' 
+                                  ? 'text-green-500' 
+                                  : token.direction === 'negative' 
+                                    ? 'text-red-500' 
+                                    : index === 0 
+                                      ? 'text-gray-300'
+                                      : 'text-gray-300 group-hover:text-gray-100 transition-colors duration-200'}`}
+                            >
+                              <span className="mr-1">
+                                {token.direction === 'positive' ? '+' : 
+                                 token.direction === 'negative' ? '-' : ''}
+                              </span>
+                              {token.symbol}
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     </motion.div>
                   ))}
                 </AnimatePresence>
-                
               </div>
-                    {/* Expand Button for Live Feed */}
-      {!isLiveFeedExpanded && (
-        <motion.button 
-          onClick={toggleLiveFeedExpansion} 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.0 }}
-          className="absolute left-0 mt-4 p-1 rounded transition-colors text-gray-300 hover:bg-slate-700 bg-slate-800"
-          aria-label="Expand Live Feed"
-        >
-          <ChevronDown size={16} />
-        </motion.button>
-      )}
+
+              {/* Expand Button for Live Feed */}
+              {!isLiveFeedExpanded && (
+                <motion.button 
+                  onClick={toggleLiveFeedExpansion} 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.0 }}
+                  className="absolute left-4 lg:left-0 mt-4 p-1 rounded transition-colors text-gray-300 hover:bg-slate-700 bg-slate-800 hidden"
+                  aria-label="Expand Live Feed"
+                >
+                  <ChevronDown size={16} />
+                </motion.button>
+              )}
             </div>
           </div>
 
@@ -1042,7 +1505,7 @@ export const Header: React.FC = () => {
           {isLiveFeedExpanded && (
             <button 
               onClick={toggleLiveFeedExpansion} 
-              className="absolute bottom-1 left-0 text-gray-300 hover:text-gray-100"
+              className="absolute bottom-1 left-4 lg:left-0 text-gray-300 hover:text-gray-100"
               aria-label="Collapse Live Feed"
             >
               <ChevronUp size={20} />
@@ -1056,7 +1519,6 @@ export const Header: React.FC = () => {
         isOpen={isSignUpModalOpen} 
         onClose={() => setIsSignUpModalOpen(false)} 
       />
-
     </>
   );
 }; 

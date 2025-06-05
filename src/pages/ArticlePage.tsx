@@ -189,7 +189,8 @@ const MainArticleContent: React.FC<MainArticleContentProps> = ({ slug }) => (
       Will FTX be the next bitcoin? probably not and heres what we know about it and what you need to know about it
     </p>
     {/* --- ShareBar --- */}
-    <div className="max-w-2xl px-4 md:px-8 md:mx-12 mb-6 md:mb-8">
+    <div className="max-w-2xl px-4 md:px-8 md:mx-12 mb-6 md:mb-8 flex items-center">
+ 
       <ShareBar articleUrl={window.location.href} articleTitle={`Article: ${slug} Sam Bankman-Fried's FTX is a fraud and a ponzi scheme`} />
     </div>
     {/* --- END: ShareBar --- */}
