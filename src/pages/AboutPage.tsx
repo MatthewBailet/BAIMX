@@ -1,39 +1,88 @@
 import React from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion'; // Added motion and scroll hooks
 import { StickyHeader } from '../App'; // Assuming App.tsx is in the src directory
 import { ArrowRight, Award, TrendingUp, Users, BookOpen, BarChart3, Globe, Mail } from 'lucide-react'; // Added icons
 
 const AboutPage: React.FC = () => {
+  // Scroll-based animations for video zoom
+  const { scrollYProgress } = useScroll();
+  const videoScale = useTransform(scrollYProgress, [0, 0.3], [1, 1.15]); // Zoom from 1x to 1.15x over first 30% of scroll
+  const videoOpacity = useTransform(scrollYProgress, [0, 0.25, 0.4], [1, 0.8, 0.3]); // Fade out as we scroll
+
+  // Animation variants for hero text
+  const heroVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: { opacity: 1, y: 0 }
+  };
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2,
+        delayChildren: 0.1
+      }
+    }
+  };
+
   return (
     <>
       <StickyHeader />
       <div className="bg-white min-h-screen pt-24"> {/* Adjusted padding for sticky header */}
 
         {/* Hero Section */}
-        <section className="bg-slate-800 py-20 md:py-52 border-b border-gray-700 relative overflow-hidden"> {/* Changed bg, added relative & overflow */}
-          {/* Background Video */}
-          <video
+        <section className="bg-slate-800 py-28 mt-0 md:mt-30 md:py-48 border-b border-gray-400 relative overflow-hidden w-full md:w-[77rem] mx-auto rounded-none md:rounded-xl"> {/* Changed bg, added relative & overflow */}
+          {/* Background Video with Scroll-based Zoom and Initial Fade-in */}
+          <motion.video
             autoPlay
             loop
             muted
             playsInline
-            className="absolute top-0 left-0 w-full h-full object-cover z-0"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 2, ease: "easeOut" }}
+            style={{ 
+              scale: videoScale,
+              opacity: videoOpacity
+            }}
+            className="absolute top-0 left-0 w-full h-full object-cover z-0 blur-md"
           >
             <source src="/BGV.m4v" type="video/mp4" /> {/* Use source element for type attribute */}
             Your browser does not support the video tag. {/* Fallback text */}
-          </video>
+          </motion.video>
           {/* Gradient Overlay */}
           <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-black/50 via-black/60 to-black/90 z-10" />
 
-          {/* Content (ensure this is on top) */}
-          <div className="relative z-20 container mx-auto max-w-[77rem] px-4 text-center mt-12">
-            <img src="/logoBAIMXFinal.png" alt="BAIMX Logo" className="h-10 md:h-13 w-auto mx-auto mb-2" /> {/* Changed to white logo for dark bg */}
-            <h1 className="text-4xl md:text-6xl font-bold text-white max-w-5xl mx-auto mb-6 dm-serif-text-regular leading-tight">
+          {/* Content with Animations */}
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            className="relative z-20 container mx-auto max-w-[77rem] px-4 text-center mt-12"
+          >
+            <motion.img 
+              variants={heroVariants}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+              src="/BAIMXfavicon.svg" 
+              alt="BAIMX Logo" 
+              className="h-12 md:h-14 w-auto mx-auto mb-4" 
+            />
+            <motion.h1 
+              variants={heroVariants}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+              className="text-3xl md:text-4xl font-bold text-white max-w-2xl mx-auto mb-6 dm-serif-text-regular leading-tight"
+            >
               Navigating the Complexities of Global Decentralized Finance.
-            </h1>
-            <p className="text-md md:text-lg text-slate-200 max-w-3xl mx-auto font-light">
+            </motion.h1>
+            <motion.p 
+              variants={heroVariants}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+              className="text-md md:text-md text-slate-200 max-w-xl leading-tight mx-auto font-light"
+            >
               We deliver unparalleled insight and clarity in a rapidly evolving financial world. We provide the critical intelligence that empowers leaders and investors to make informed decisions.
-            </p>
-          </div>
+            </motion.p>
+          </motion.div>
         </section>
 
         <div className="container mx-auto max-w-[77rem] py-16 md:py-24 px-4">

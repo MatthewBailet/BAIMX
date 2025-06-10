@@ -1438,6 +1438,27 @@ export const FeaturedSection: React.FC = () => {
 
   return (
     <section className="container mx-auto  max-w-[77rem] bg-white border border-gray-400">
+      <div className="border-b border-gray-400 py-3 px-8 flex items-center justify-between">
+        <h2 className='text-gray-800 text-lg font-semibold pr-4'>
+          Notable Today
+        </h2>
+        <div className="flex text-sm gap-x-4 px-4 flex-grow underline border-l border-gray-400 ">
+          <a href="#" className="text-gray-800 hover:text-gray-500 hover:underline cursor-default">Bitcoin</a>
+          <a href="#" className="text-gray-800 hover:text-gray-500 hover:underline cursor-default">Ethereum</a>
+          <a href="#" className="text-gray-800 hover:text-gray-500 hover:underline cursor-default">DeFi</a>
+          <a href="#" className="text-gray-800 hover:text-gray-500 hover:underline cursor-default">NFTs</a>
+          <a href="#" className="text-gray-800 hover:text-gray-500 hover:underline cursor-default">Coinbase</a>
+          <a href="#" className="text-gray-800 hover:text-gray-500 hover:underline cursor-default">Binance</a>
+          <a href="#" className="text-gray-800 hover:text-gray-500 hover:underline cursor-default">Bitcoin</a>
+          <a href="#" className="text-gray-800 hover:text-gray-500 hover:underline cursor-default">Ethereum</a>
+          <a href="#" className="text-gray-800 hover:text-gray-500 hover:underline cursor-default">DeFi</a>
+          <a href="#" className="text-gray-800 hover:text-gray-500 hover:underline cursor-default">NFTs</a>
+          <a href="#" className="text-gray-800  hover:text-gray-500 hover:underline cursor-default">Coinbase</a>
+          <a href="#" className="text-gray-800  hover:text-gray-500 hover:underline cursor-default">Binance</a>
+          
+          
+        </div>
+      </div>
       
       
       
@@ -1463,7 +1484,7 @@ export const FeaturedSection: React.FC = () => {
                 {/* Image Container */}
                 <div className="relative  overflow-hidden">
                   <img 
-                    src="/SBF-Books-Culture-1245966892.webp"
+                    src="/SolanaTrash.png"
                     alt="" 
                     className="w-full h-56 object-cover transition-transform duration-500"
                   />
@@ -1486,11 +1507,11 @@ export const FeaturedSection: React.FC = () => {
               <div className="mt-auto pt-4 "> 
                       <div className="pt-3 border-t border-gray-300">  {/* Lighter border */}
                         <div>
-                          <a href="#" className="block cursor-default font-medium leading-[1.1] py-1 text-md text-gray-900 hover:text-gray-500"> {/* Reverted hover to gray-500 */}
+                          <a href="#" className="block cursor-default font-semibold leading-[1.1] py-1 text-md text-gray-900 hover:text-gray-500"> {/* Reverted hover to gray-500 */}
                             Putin Offers Talks With Ukraine on May 15 But Skirts Truce
                           </a>
                           
-                          <a href="#" className="block py-1 text-md cursor-default leading-[1.1] font-medium text-gray-900 hover:text-gray-500 border-t border-gray-200 mt-1.5 pt-1.5"> {/* Reverted hover to gray-500 */}
+                          <a href="#" className="block py-1 text-md cursor-default leading-[1.1] font-semibold text-gray-900 hover:text-gray-500 border-t border-gray-200 mt-1.5 pt-1.5"> {/* Reverted hover to gray-500 */}
                             What's Next on Russia Sanctions If Putin Balks at Ceasefire Call
                           </a>
                         </div>
@@ -1599,7 +1620,7 @@ export const FeaturedSection: React.FC = () => {
                   <span className="text-xs text-gray-500 w-14 flex-shrink-0 pt-0.5 whitespace-nowrap"> {/* Time ago, pt to align with first line of title */}
                     {article.time}
                   </span>
-                  <h5 className="text-sm font-medium text-gray-800 group-hover:text-gray-500 line-clamp-3 leading-tight transition-colors duration-200 flex-grow">
+                  <h5 className="text-sm font-semibold text-gray-800 group-hover:text-gray-500 line-clamp-3 leading-tight transition-colors duration-200 flex-grow">
                     {article.title}
                   </h5>
                 </div>
