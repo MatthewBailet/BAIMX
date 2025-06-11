@@ -135,14 +135,14 @@ export const MiniTokenChart: React.FC<MiniTokenChartProps> = memo(({
             <img
               src={iconUrl}
               alt={`${symbol} icon`}
-              className="w-4 h-4 rounded-full"
+              className="w-6 h-6 rounded-full"
             />
           ) : (
             <div className="w-4 h-4 rounded-full bg-slate-800 flex items-center justify-center">
               <span className="text-[10px] text-gray-400">{symbol.charAt(0)}</span>
             </div>
           )}
-          <span className="text-xs font-medium text-white">{symbol}/USD</span>
+          <span className="text-sm font-medium text-white">{symbol}/USD</span>
           {/* Price Change Indicator Icon */}
           {percentageChange !== null && (
             <span className="ml-1">

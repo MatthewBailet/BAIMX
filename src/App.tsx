@@ -1438,11 +1438,11 @@ export const FeaturedSection: React.FC = () => {
 
   return (
     <section className="container mx-auto  max-w-[77rem] bg-white border border-gray-400">
-      <div className="border-b border-gray-400 py-3 px-8 flex items-center justify-between">
+      <div className="border-b border-gray-400 pt-4 pb-2 px-4 md:px-8 flex items-center justify-between">
         <h2 className='text-gray-800 text-lg font-semibold pr-4'>
           Notable Today
         </h2>
-        <div className="flex text-sm gap-x-4 px-4 flex-grow underline border-l border-gray-400 ">
+        <div className="hidden md:flex text-sm gap-x-5 px-4 flex-grow underline border-l border-gray-400 ">
           <a href="#" className="text-gray-800 hover:text-gray-500 hover:underline cursor-default">Bitcoin</a>
           <a href="#" className="text-gray-800 hover:text-gray-500 hover:underline cursor-default">Ethereum</a>
           <a href="#" className="text-gray-800 hover:text-gray-500 hover:underline cursor-default">DeFi</a>
@@ -1472,14 +1472,14 @@ export const FeaturedSection: React.FC = () => {
       <div className=" grid grid-cols-1 md:grid-cols-4  bg-white border-b border-gray-300 cursor-default"> {/* Lighter bottom border */}
 
         {/* Left Column: Top Stories (3/4) */}
-        <div className="md:col-span-3  border-r border-gray-300"> {/* Lighter right border */}
+        <div className="md:col-span-3 border-b md:border-b-0 md:border-r border-gray-300"> {/* Lighter right border */}
           {/* Structured Header */}
           
           
           {/* NEW: Featured Story Row - Using Static Data (not affected by article cycling) */}
           <div className="grid grid-cols-1  md:grid-cols-5 gap-0 mb-6 border-b border-gray-300 "> {/* Lighter bottom border */}
             {/* First Featured Story - Static */}
-            <div className="md:col-span-2 border-r border-gray-300 p-8 pt-8"> {/* Lighter right border */}
+            <div className="md:col-span-2 border-b md:border-b-0 md:border-r border-gray-300 p-4 md:p-8"> {/* Lighter right border */}
               <Link to="/article/static-1" className="group cursor-default">
                 {/* Image Container */}
                 <div className="relative  overflow-hidden">
@@ -1520,7 +1520,7 @@ export const FeaturedSection: React.FC = () => {
             </div>
 
             {/* Second Featured Story - Static */}
-            <div className="md:col-span-3 p-8 px-8 cursor-default">
+            <div className="md:col-span-3 p-4 md:p-8 cursor-default">
               <Link to="/article/static-2" className="group cursor-default">
                 {/* Image Container */}
                 <div className="relative overflow-hidden cursor-default">
@@ -1573,7 +1573,7 @@ export const FeaturedSection: React.FC = () => {
           </Link>
           
           {/* Regular Stories Grid - Static - Changed to 3x2 */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 px-8 py-8"> {/* Changed to sm:grid-cols-3 and adjusted gap */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 px-4 md:px-8 py-8"> {/* Changed to sm:grid-cols-3 and adjusted gap */}
             {/* Using slice(2, 8) for static content from initialArticles */}
             {initialArticles.slice(2, 8).map((article) => ( // Changed source to initialArticles
               <Link key={`top-${article.id}`} to={`/article/${article.id}`} className="group flex flex-col transition-colors duration-150 py-1 cursor-default"> {/* Changed to flex-col */}
